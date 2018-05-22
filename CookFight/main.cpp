@@ -41,10 +41,13 @@ KeyboardManager *kbManager;
 
 const int JOYSTICK_DEAD_ZONE = 6000;
 //Game Controller 1 handler
-SDL_GameController* gGameController = NULL;
-Gamepad* gp;
 
-void handleController()
+std::vector<SDL_GameController*> gameControllers;
+std::vector<Gamepad*> gamePads;
+
+
+
+void handleController(SDL_GameController* gGameController, Gamepad* gp)
 {
 	if (SDL_GameControllerGetButton(gGameController,
 		SDL_CONTROLLER_BUTTON_A))
@@ -282,10 +285,12 @@ void handleKeys(SDL_Event events, bool bKeyDown, int x, int y)
 
 void close()
 {
-	SDL_GameControllerClose(gGameController);
-	gGameController = NULL;
-
-
+	for (int i = 0; i < gameControllers.size(); i++)
+	{
+		SDL_GameControllerClose(gameControllers[i]);
+		gameControllers[i] = NULL;
+	}
+	
 	//Destroy window	
 	SDL_DestroyWindow( gWindow );
 	gWindow = NULL;
@@ -307,9 +312,14 @@ int main( int argc, char* args[] )
 	
 	kbManager = new KeyboardManager();
 
-	gp = new Gamepad();
+	
+	
 
 	bool pollControllers = false;
+
+	
+
+	int numJoysticks = SDL_NumJoysticks();
 
 	if (SDL_NumJoysticks() < 1)
 	{
@@ -317,24 +327,36 @@ int main( int argc, char* args[] )
 	}
 	else
 	{
-
-		gGameController = SDL_GameControllerOpen(0);
-		SDL_GameControllerEventState(SDL_ENABLE);
-		pollControllers = true;
-		if (gGameController == NULL)
+		for (int i = 0; i < numJoysticks; i++)
 		{
-			printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+			SDL_GameController* gc = NULL;
+			gc = SDL_GameControllerOpen(i);
+			SDL_GameControllerEventState(SDL_ENABLE);
+			pollControllers = true;
+
+			gameControllers.push_back(gc);
+
+			Gamepad* gp = new Gamepad();
+			gamePads.push_back(gp);
+
+
+
+			if (gc == NULL)
+			{
+				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
+			}
+			else {
+				printf("Found controller!\n");
+			}
 		}
-		else {
-			printf("Found controller!\n");
-		}
+		
 	}
 
 
 
 	
 
-	ResourceManager* rm = new ResourceManager(kbManager, gp);
+	ResourceManager* rm = new ResourceManager(kbManager, gamePads);
 
 	
 	StateManager *stateManager = new StateManager();
@@ -436,7 +458,11 @@ int main( int argc, char* args[] )
 		
 		if (pollControllers)
 		{
-			handleController();
+			for (int i = 0; i < gameControllers.size(); i++)
+			{
+				handleController(gameControllers[i], gamePads[i]);
+			}
+		
 		}
 		
 		

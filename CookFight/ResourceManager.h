@@ -14,7 +14,7 @@
 class ResourceManager
 {
 public:
-	ResourceManager(KeyboardManager *km, Gamepad *gp);
+	ResourceManager(KeyboardManager *km, std::vector<Gamepad*> gamePads);
 	~ResourceManager();
 
 	void initResources();
@@ -32,7 +32,9 @@ public:
 
 	BackgroundManager* getBackgroundManager();
 
-	Gamepad* getGamepad();
+	Gamepad* getGamepad(int index);
+
+	int getNumGamePads() { return gamePads.size(); }
 
 
 
@@ -50,7 +52,7 @@ protected:
 	BackgroundManager* bgmng;
 
 
-	Gamepad* gp;
+	std::vector<Gamepad*> gamePads;
 
 
 

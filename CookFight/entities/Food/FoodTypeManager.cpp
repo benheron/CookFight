@@ -26,7 +26,7 @@ void FoodTypeManager::loadFoodData(std::string filePath)
 		int numFood;
 		int numFoodStates;
 		glm::vec2 dimensions;
-		std::vector<std::string> foodTypeNames;
+		
 		foodDimens = glm::vec3(dimensions, 0);
 
 		file >> textureFilePath;
@@ -41,7 +41,7 @@ void FoodTypeManager::loadFoodData(std::string filePath)
 		glm::vec2 foodTextureDimens = foodTexture->getOrigDimens();
 
 
-		std::vector<std::string> foodStates;
+		
 
 		std::unordered_map<std::string, AnimationType*> animations;
 

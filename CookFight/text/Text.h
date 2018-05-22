@@ -15,7 +15,10 @@ public:
 
 
 	Text(glm::vec3 pos, std::string fontName, int fontSize, std::string theText, TextImageManager *timng);
+	Text(TextImageManager *timng, std::string theText, int fontSize = 32, std::string fontName = "arial",  glm::vec3 pos = glm::vec3(0));
 	~Text();
+
+	void textInit();
 
 	char operator[](const std::size_t position)
 	{ return theText[position];	}

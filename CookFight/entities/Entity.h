@@ -89,7 +89,7 @@ public:
 	/**
 	@brief
 	*/
-	void setCentre(glm::vec3 p);
+	virtual void setCentre(glm::vec3 p);
 
 	/**
 	@brief
@@ -130,17 +130,17 @@ public:
 
 	virtual std::vector<Texture*> getTextures() { return entTextures; }
 	
-
-
+	///set new dimensions
+	void setDimens(glm::vec3 nd, bool add = false);
 
 
 
 	///rotate across x axis
-	void setYaw(float rot, bool add);
+	void setYaw(float rot, bool add = false);
 	///rotate across y axis
-	void setPitch(float rot, bool add);
+	void setPitch(float rot, bool add =false);
 	///rotate across z axis
-	void setRoll(float rot, bool add);
+	void setRoll(float rot, bool add = false);
 
 	float getRoll();
 
@@ -181,7 +181,7 @@ public:
 	@brief Sets value of should the entity render
 	@param r True or false to render or not
 	*/
-	void setShouldRender(bool r) { shouldRender = r; }
+	void setShouldRender(bool r);
 
 	/**
 	@brief Gets the value of if the entity should render

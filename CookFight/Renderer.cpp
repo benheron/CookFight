@@ -271,12 +271,7 @@ void Renderer::addToScreen(std::vector<Entity*> entities, glm::mat4 projMat, glm
 
 	for (int i = 0; i < entities.size(); i++)
 	{
-		//render
-		std::vector<Entity*> entChildren = entities[i]->getChildren();
-		if (entChildren.size() > 0) 
-		{
-			addToScreen(entChildren, projMat, viewMat);
-		}
+		
 		
 
 
@@ -347,7 +342,12 @@ void Renderer::addToScreen(std::vector<Entity*> entities, glm::mat4 projMat, glm
 			}
 
 		}
-
+		//render
+		std::vector<Entity*> entChildren = entities[i]->getChildren();
+		if (entChildren.size() > 0)
+		{
+			addToScreen(entChildren, projMat, viewMat);
+		}
 
 	}
 

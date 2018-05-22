@@ -28,9 +28,10 @@ Entity::Entity(Texture* entTexture, glm::vec3 pos, glm::vec3 dimens2, glm::vec2 
 	/*	uvSize.x /= entTexture->getOrigDimens().x;
 		uvSize.y /= entTexture->getOrigDimens().y;*/
 
-		uvSize = (uvSize - 1.0f) / entTexture->getOrigDimens();
+		uvSize = uvSize / entTexture->getOrigDimens();
 
 		uvPos = glm::vec2(0.5f)/ entTexture->getOrigDimens();
+		uvPos = glm::vec2(0);
 	}
 
 	container = false;
@@ -119,7 +120,7 @@ void Entity::init()
 	}
 	secOffsetPos = glm::vec3(0);
 
-	bb = new BoundingBox(glm::vec3(-1.f, -1.f, 0), glm::vec3(1.f, 1.f, 0), offsetPos);
+	bb = new BoundingBox(glm::vec3(-1.f, -1.f, 0), glm::vec3(1.f, 1.f, 0));
 
 	//bb = new BoundingBox(-offsetPos, -offsetPos+dimens, offsetPos);
 
@@ -181,7 +182,9 @@ void Entity::updateModelMatrix()
 
 	glm::vec3 jointPos = pos + offsetPos + secOffsetPos;// +glm::vec3(0.001f, 0.001f, 0);
 
-	glm::vec3 roundPos = glm::vec3(round(jointPos.x), round(jointPos.y), 0);
+	//glm::vec3 roundPos = glm::vec3(round(jointPos.x), round(jointPos.y), 0);
+
+	glm::vec3 roundPos =  jointPos;
 
 
 
@@ -336,32 +339,58 @@ glm::vec3 Entity::getCentrePosition()
 
 void Entity::setPosition(glm::vec3 p, bool add)
 {
+	glm::vec3 diff = p - pos;
 	if (add)
 	{
 		pos += p;
+		for (int i = 0; i < children.size(); i++)
+		{
+			children[i]->setPosition(p, true);
+		}
+
 	}
 	else {
 		pos = p;
+		for (int i = 0; i < children.size(); i++)
+		{
+			children[i]->setPosition(diff, true);
+		}
+
 	}
+
+	
 	updateModelMatrix();
 	updateBoundingBoxMatrix();
 
 	modelMatChanged = true;
 
 
-	for (int i = 0; i < children.size(); i++)
-	{
-		children[i]->setPosition(p, add);
-	}
+	
 }
 
 void Entity::setCentre(glm::vec3 p)
 {
-	pos = p - (dimens / 2.f);
-	updateModelMatrix();
-	updateBoundingBoxMatrix();
+
+
+	setPosition(p - (dimens / 2.f));
+	//updateModelMatrix();
+	//updateBoundingBoxMatrix();
 }
 
+void Entity::setDimens(glm::vec3 nd, bool add)
+{
+	if (add)
+	{
+		dimens += nd;
+	}
+	else
+	{
+		dimens = nd;
+	}
+	
+	offsetPos = glm::vec3(dimens.x / 2, dimens.y / 2, 0);
+	dimensScale = modScale * glm::vec3(dimens.x / 2, dimens.y / 2, 0);
+}
 
 void Entity::setYaw(float rot, bool add)
 {
@@ -467,6 +496,8 @@ glm::mat4 Entity::getModelMatrix(int index)
 void Entity::setScale(glm::vec3 s)
 {
 	modScale = s;
+	updateModelMatrix();
+	updateBoundingBoxMatrix();
 }
 
 glm::vec3 Entity::getDimensions()
@@ -504,3 +535,13 @@ std::vector<glm::vec2> Entity::getEntityVertices()
 	return vertices;
 }
 
+
+void Entity::setShouldRender(bool r)
+{
+	for (int i = 0; i < children.size(); i++)
+	{
+		children[i]->setShouldRender(r);
+	}
+
+	shouldRender = r;
+}

@@ -17,6 +17,8 @@ public:
 
 	bool getTimerFinished() { return timerFinished; }
 
+	float getPercentLeft() { return (timeLeft / timerInput) * 100; }
+
 protected:
 	
 	float timerInput;

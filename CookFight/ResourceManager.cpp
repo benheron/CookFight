@@ -1,6 +1,6 @@
 #include "ResourceManager.h"
 
-ResourceManager::ResourceManager(KeyboardManager *km, Gamepad *gp) : km(km), gp(gp)
+ResourceManager::ResourceManager(KeyboardManager *km, std::vector<Gamepad*> gamePads) : km(km), gamePads(gamePads)
 {
 	initResources();
 }
@@ -59,7 +59,7 @@ BackgroundManager* ResourceManager::getBackgroundManager()
 	return bgmng;
 }
 
-Gamepad* ResourceManager::getGamepad()
+Gamepad* ResourceManager::getGamepad(int index)
 {
-	return gp;
+	return gamePads[index];
 }

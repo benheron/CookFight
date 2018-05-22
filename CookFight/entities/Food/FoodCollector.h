@@ -20,7 +20,7 @@ public:
 	bool addFood(Food* f);
 
 	
-
+	std::vector<Food*> getFoodsCollected() { return foodsCollected; }
 
 
 

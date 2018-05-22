@@ -3,12 +3,13 @@
 Text::Text(glm::vec3 pos, std::string fontName, int fontSize, std::string theText, TextImageManager *timng) : Entity(pos),
 fontName(fontName), fontSize(fontSize), theText(theText), timng(timng)
 {
-	spacing = 0;
-	writeText();
-	origPos = pos;
-	alignment = leftAlign;
+	textInit();
+}
 
-	entTextures.push_back(timng->getFontByName(fontName));
+Text::Text(TextImageManager *timng, std::string theText, int fontSize, std::string fontName, glm::vec3 pos) : Entity(pos),
+fontName(fontName), fontSize(fontSize), theText(theText), timng(timng)
+{
+	textInit();
 }
 
 Text::~Text()
@@ -17,6 +18,17 @@ Text::~Text()
 	{
 		delete textString[i];
 	}
+}
+
+void Text::textInit()
+{
+	spacing = 0;
+	writeText();
+	origPos = pos;
+	alignment = leftAlign;
+
+
+	entTextures.push_back(timng->getFontByName(fontName));
 }
 
 void Text::writeText()
@@ -43,7 +55,8 @@ void Text::writeText()
 		tc = new TextCharacter(newPosVec, tct->getTextCharacterDimensions() /*/ 32 * fontSize*/, tct);
 		textString.push_back(tc);
 
-		dimens += tct->getTextCharacterDimensions() /*/ 32 * fontSize*/;
+		dimens.x += tct->getTextCharacterDimensions().x /*/ 32 * fontSize*/;
+		dimens.y = tct->getTextCharacterDimensions().y;
 
 		std::vector<glm::vec2> v = tc->getTextCharacterVertices();
 		std::vector<glm::vec2> u = tc->getTextCharacterUVs();

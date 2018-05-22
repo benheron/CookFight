@@ -63,6 +63,10 @@ public:
 
 	SpriteSheet* getFoodSpriteSheet() { return foodSpriteSheet; }
 
+	std::vector<std::string> getFoodStates() { return foodStates; }
+
+	std::vector<std::string> getFoodTypeNames() { return foodTypeNames; }
+
 private:
 	///The number of different spritesheets.
 	int numOfSpritesheets;
@@ -88,4 +92,8 @@ private:
 	*/
 	void loadFoodData(std::string filePath);
 
+
+	std::vector<std::string> foodStates;
+
+	std::vector<std::string> foodTypeNames;
 };

@@ -20,6 +20,8 @@ public:
 
 	void stopTime() { timeTracked->stopTrackingTime(); }
 
+	
+
 private:
 	std::string timeString;
 	Text* timeText;

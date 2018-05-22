@@ -15,7 +15,11 @@
 #include "../entities/Food/FoodCollector.h"
 #include "../entities/HUD/TextTime.h"
 
+#include "../entities/HUD/ScoreCard.h"
+
 #include "../Utilities/Time/Timer.h"
+
+#include "../entities/HUD/ProgressBar.h"
 
 class GameOverState;
 
@@ -53,7 +57,7 @@ protected:
 	virtual void unload();
 
 
-	bool collisionWithObjects();
+	bool collisionWithObjects(Actor *e1);
 
 
 	bool cameraFollow = true;
@@ -73,6 +77,9 @@ protected:
 
 	Chef* e1;
 
+	std::vector<Chef*> players;
+
+	std::vector<Food*> playerFood;
 	Food *f2;
 
 
@@ -87,19 +94,39 @@ protected:
 	CookingDevice *cookDev;
 	FoodCollector *foodColl;
 
-	std::vector<Projectile*> projectiles;
+	std::vector<FoodCollector*> foodCollects;
+
 	std::vector<Projectile*> projBank;
 	
 	bool postVel = false;
 	float speedWhenStopped = 0.f;
 
-
-	bool pressingPickup = false;
-	bool pressingThrowItem = false;
+	std::vector<bool> pressingPickup;
+	std::vector<float> pressingPickupBuffer;
+	//bool pressingPickup = false;
+	
+	std::vector<bool> pressingThrowItem;
 
 
 	Timer *levelTimer;
 	TextTime* levelTimerText;
 	
+
+	std::vector<Entity*> shadows;
+
+
+	bool gameFinished;
+
+
+
+	Entity* scoreBackground;
 	
+	ScoreCard* scoCard;
+
+	std::vector<ScoreCard*> scorCards;
+	
+
+	bool addedToScoreCard = false;
+
+	ProgressBar *pb;
 };
