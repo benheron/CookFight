@@ -22,9 +22,11 @@ bool Platform::init()
 
 	//renderSize = glm::vec2(1920.f, 1080.f);
 
+
+
 	bool success = true;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) < 0)
 	{
 		printf("SDL could not initialise! SDL Error: %s\n", SDL_GetError());
 		success = false;
@@ -77,6 +79,12 @@ bool Platform::init()
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
+				if (!mixerInit())
+				{
+					printf("Unable to initialise mixer. SDL Error: %s\n", SDL_GetError());
+				}
+
+				setIcon();
 				//controller mappings
 				//SDL_GameControllerAddMappingsFromFile("res/controller/gamecontrollerdb_204.txt");
 
@@ -103,3 +111,42 @@ SDL_Window* Platform::getWindow()
 	return window;
 }
 
+bool Platform::mixerInit()
+{
+
+	int inF  = MIX_INIT_MP3 | MIX_INIT_OGG;
+
+	int flags = Mix_Init(inF);
+
+	//Check if all formats were loaded
+	if ((flags&inF) != inF)
+	{
+		printf("SDL_mixer failed to initialise itself or some requested formats: %s \n", Mix_GetError());
+		return false;
+	}
+
+	//Open audio with some standard audio formats/freqs. Also set channels to 2 for stereo sound.
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		printf("SDL_mixer open audio failed: %s \n", Mix_GetError());
+		return false;
+	}
+
+	return true;
+}
+
+void Platform::setIcon()
+{
+
+	std::string filePath = "res/img/icon.png";
+
+	SDL_Surface *surface = IMG_Load(filePath.c_str());
+
+	SDL_SetWindowIcon(window, surface);
+
+
+	SDL_FreeSurface(surface);
+
+
+
+}

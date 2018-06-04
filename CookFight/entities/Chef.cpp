@@ -18,6 +18,9 @@ Chef::~Chef()
 
 void Chef::chefInit()
 {
+	maxHealth = 50;
+	health = maxHealth;
+
 
 }
 
@@ -42,5 +45,26 @@ void Chef::setFoodHeldType(FoodType* ft)
 	}
 	else {
 		foodHeld->setShouldRender(true);
+	}
+}
+
+void Chef::setHealth(int h, bool add)
+{
+	if (add)
+	{
+		health += h;
+	}
+	else {
+		health = h;
+	}
+
+	if (health > maxHealth)
+	{
+		health = maxHealth;
+	}
+
+	if (health < 0)
+	{
+		health = 0;
 	}
 }

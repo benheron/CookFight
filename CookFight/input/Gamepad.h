@@ -9,9 +9,11 @@ public:
 	Gamepad();
 	~Gamepad();
 
-	void setButtonDown(std::string k, bool d) { buttons[k] = d; }
+	void setButtonDown(std::string k, bool d);
 
 	bool buttonDown(std::string k) { return buttons[k]; }
+
+	bool buttonPress(std::string k);
 
 	void setTriggerValue(std::string k, float val) { trigger[k] = val; }
 
@@ -25,8 +27,11 @@ public:
 
 	StickVal getRightStick();
 
+	
 private:
 	std::unordered_map<std::string, bool> buttons;
+
+	std::unordered_map<std::string, int> buttonsPress;
 
 	std::unordered_map<std::string, float> trigger;
 

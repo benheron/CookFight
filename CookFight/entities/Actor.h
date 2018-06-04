@@ -24,6 +24,9 @@ public:
 
 	void updateFloorHitBox();
 
+	void updateHurtBox();
+
+
 	void actorInit();
 
 
@@ -56,12 +59,15 @@ public:
 	bool getMoving() { return moving; }
 	void setMoving(bool m) { moving = m; }
 
-
+	void setActorState(ActorState as) { aState = as; }
 	ActorState getActorState() { return aState; }
 	
 
 
 	void hitStaticObject(glm::vec3 colNorm);
+
+
+	BoundingBox* getHurtBox() { return hurtBox; }
 
 private:
 
@@ -105,5 +111,12 @@ private:
 
 	ActorState aState;
 	ActorState prevState;
+
+
+
+
+	BoundingBox* hurtBox;
+	glm::vec3 hurtBoxScale;
+
 };
 

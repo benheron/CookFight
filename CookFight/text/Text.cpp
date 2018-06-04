@@ -68,7 +68,7 @@ void Text::writeText()
 		//UVs.insert(UVs.end(), u.begin(), u.end());
 
 
-
+		//offsetPos = glm::vec3(dimens.x / 2, dimens.y / 2, 0);
 
 	}
 

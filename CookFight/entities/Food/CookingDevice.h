@@ -6,12 +6,14 @@
 #include "../../Utilities/Time/Timer.h"
 #include "../HUD/ProgressBar.h"
 
+#include "../../Audio/Audio.h"
+
 
 
 class CookingDevice : public InteractiveObject
 {
 public:
-	CookingDevice(Texture* entTexture, Texture* iconTexture, ProgressBar* pb, FoodTypeManager* ftm, glm::vec3 pos = glm::vec3(0), glm::vec3 dimens = glm::vec3(0), glm::vec2 uvSize = glm::vec2(0));
+	CookingDevice(Texture* entTexture, Texture* iconTexture, ProgressBar* pb, Audio* cookingGrowl, FoodTypeManager* ftm, glm::vec3 pos = glm::vec3(0), glm::vec3 dimens = glm::vec3(0), glm::vec2 uvSize = glm::vec2(0));
 	CookingDevice(FoodTypeManager* ftm, glm::vec3 pos = glm::vec3(0), glm::vec3 dimens = glm::vec3(0), glm::vec2 uvSize = glm::vec2(0), glm::vec3 offPos = glm::vec3(0), bool container = false);
 	~CookingDevice();
 
@@ -26,7 +28,7 @@ public:
 
 	void getFood(Food* f);
 	
-
+	void resetCookDevice(FoodTypeManager* ftm);
 
 
 
@@ -38,4 +40,9 @@ protected:
 	Timer* cookingTimer;
 
 	ProgressBar* cookProgBar;
+
+	Audio* cookingGrowl;
+
+
+	
 };

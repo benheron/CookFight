@@ -20,7 +20,10 @@
 #include "../Utilities/Time/Timer.h"
 
 #include "../entities/HUD/ProgressBar.h"
+#include "../entities/HUD/ItemSlot.h"
 
+
+class PauseState;
 class GameOverState;
 
 class GameState : public State
@@ -56,6 +59,8 @@ protected:
 	*/
 	virtual void unload();
 
+
+	void resetGame();
 
 	bool collisionWithObjects(Actor *e1);
 
@@ -129,4 +134,31 @@ protected:
 	bool addedToScoreCard = false;
 
 	ProgressBar *pb;
+
+
+
+	std::vector<ProgressBar*> healthBars;
+
+	std::vector<bool> takenAway;
+
+
+
+
+
+	std::vector<glm::vec3> playerStartingPositions;
+
+	bool pause;
+
+	std::string pauseAction;
+
+	Text* playAgainText;
+
+	glm::vec3 origTimerValue;
+
+
+
+
+	std::vector<Audio*> sounds;
+	Audio* bgMusic;
+
 };

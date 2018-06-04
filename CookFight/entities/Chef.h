@@ -30,7 +30,12 @@ public:
 
 	int getHealth() { return health; }
 
-	void setHealth(int h) { health = h; }
+	int getMaxHealth() { return maxHealth; }
+
+
+	void setHealth(int h, bool add = false);
+
+	void setFullHealth() { health = maxHealth; }
 
 	void reduceHealth(int h) { health -= h; }
 
@@ -39,7 +44,11 @@ public:
 protected:
 	Food *foodHeld;
 
+	int maxHealth;
+
 	int health;
 
 	std::vector<Projectile*> projectiles;
+
+	
 };

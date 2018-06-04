@@ -7,9 +7,16 @@
 
 #include "entities/Food/FoodTypeManager.h"
 
+#include "Audio/AudioManager.h"
+
 
 #include "Keyboard.h"
 #include "input/Gamepad.h"
+
+
+
+class PauseState;
+
 
 class ResourceManager
 {
@@ -32,6 +39,8 @@ public:
 
 	BackgroundManager* getBackgroundManager();
 
+	AudioManager* getAudioManager() { return amng; }
+
 	Gamepad* getGamepad(int index);
 
 	int getNumGamePads() { return gamePads.size(); }
@@ -40,6 +49,9 @@ public:
 
 
 	FoodTypeManager* getFoodTypeManager() { return ftmng; }
+
+	void setPauseState(PauseState* ps) { paState = ps; }
+	PauseState* getPauseState() { return paState; }
 
 protected:
 
@@ -51,13 +63,15 @@ protected:
 
 	BackgroundManager* bgmng;
 
+	AudioManager* amng;
+
 
 	std::vector<Gamepad*> gamePads;
 
 
 
 
-
+	PauseState* paState;
 
 
 

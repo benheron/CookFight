@@ -48,50 +48,50 @@ KeyboardManager::KeyboardManager()
 	keys["9"] = false;
 
 
-	keyPress["a"] = false;
-	keyPress["b"] = false;
-	keyPress["c"] = false;
-	keyPress["d"] = false;
-	keyPress["e"] = false;
-	keyPress["f"] = false;
-	keyPress["g"] = false;
-	keyPress["h"] = false;
-	keyPress["i"] = false;
-	keyPress["j"] = false;
-	keyPress["k"] = false;
-	keyPress["l"] = false;
-	keyPress["m"] = false;
-	keyPress["n"] = false;
-	keyPress["o"] = false;
-	keyPress["p"] = false;
-	keyPress["q"] = false;
-	keyPress["r"] = false;
-	keyPress["s"] = false;
-	keyPress["t"] = false;
-	keyPress["u"] = false;
-	keyPress["v"] = false;
-	keyPress["x"] = false;
-	keyPress["y"] = false;
-	keyPress["z"] = false;
-	keyPress["shift"] = false;
-	keyPress["ctrl"] = false;
-	keyPress["up"] = false;
-	keyPress["down"] = false;
-	keyPress["left"] = false;
-	keyPress["right"] = false;
-	keyPress["enter"] = false;
-	keyPress["space"] = false;
-	keyPress["esc"] = false;
-	keyPress["0"] = false;
-	keyPress["1"] = false;
-	keyPress["2"] = false;
-	keyPress["3"] = false;
-	keyPress["4"] = false;
-	keyPress["5"] = false;
-	keyPress["6"] = false;
-	keyPress["7"] = false;
-	keyPress["8"] = false;
-	keyPress["9"] = false;
+	keyPress["a"] = 0;
+	keyPress["b"] = 0;
+	keyPress["c"] = 0;
+	keyPress["d"] = 0;
+	keyPress["e"] = 0;
+	keyPress["f"] = 0;
+	keyPress["g"] = 0;
+	keyPress["h"] = 0;
+	keyPress["i"] = 0;
+	keyPress["j"] = 0;
+	keyPress["k"] = 0;
+	keyPress["l"] = 0;
+	keyPress["m"] = 0;
+	keyPress["n"] = 0;
+	keyPress["o"] = 0;
+	keyPress["p"] = 0;
+	keyPress["q"] = 0;
+	keyPress["r"] = 0;
+	keyPress["s"] = 0;
+	keyPress["t"] = 0;
+	keyPress["u"] = 0;
+	keyPress["v"] = 0;
+	keyPress["x"] = 0;
+	keyPress["y"] = 0;
+	keyPress["z"] = 0;
+	keyPress["shift"] = 0;
+	keyPress["ctrl"] = 0;
+	keyPress["up"] = 0;
+	keyPress["down"] = 0;
+	keyPress["left"] = 0;
+	keyPress["right"] = 0;
+	keyPress["enter"] = 0;
+	keyPress["space"] = 0;
+	keyPress["esc"] = 0;
+	keyPress["0"] = 0;
+	keyPress["1"] = 0;
+	keyPress["2"] = 0;
+	keyPress["3"] = 0;
+	keyPress["4"] = 0;
+	keyPress["5"] = 0;
+	keyPress["6"] = 0;
+	keyPress["7"] = 0;
+	keyPress["8"] = 0;
+	keyPress["9"] = 0;
 }
 
 KeyboardManager::~KeyboardManager()
@@ -100,34 +100,37 @@ KeyboardManager::~KeyboardManager()
 }
 
 
-void KeyboardManager::setKeyDown(std::string k, bool d) {
+void KeyboardManager::setKeyDown(std::string k, bool d) 
+{
+	keys[k] = d;
+
 	if (d)
 	{
-		if (!keys[k])
-		{
-			keyPress[k] = true;
-		//	printf("Keypress down %s \n", k.c_str());
-		}
-		else {
-			keyPress[k] = false;
-			//printf("Keypress up %s \n", k.c_str());
-		}
+		//keyPress[k] += 1;
 	}
 	else {
-		keyPress[k] = false;
-		//printf("Keypress up %s \n", k.c_str());
-	}
-
-	
-	keys[k] = d;
-	if (keyPress[k])
-	{
-		//printf("Keypress down %s \n", k.c_str());
+		keyPress[k] = 0;
 	}
 }
 
 
 bool KeyboardManager::keyPressed(std::string k)
 { 
-	return keyPress[k]; 
+	if (keyPress[k] == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void KeyboardManager::update()
+{
+	for (auto it = keys.begin(); it != keys.end(); ++it)
+	{
+		if (it->second)
+		{
+			keyPress[it->first]++;
+		}
+	}
 }

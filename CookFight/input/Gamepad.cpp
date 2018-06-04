@@ -36,6 +36,38 @@ Gamepad::Gamepad()
 
 
 	deadZone = 5800.f;
+
+
+
+
+
+	buttonsPress["a"] = 0;
+	buttonsPress["b"] = 0;
+	buttonsPress["x"] = 0;
+	buttonsPress["y"] = 0;
+
+	buttonsPress["lb"] = 0;
+	buttonsPress["rb"] = 0;
+	buttonsPress["lt"] = 0;
+	buttonsPress["rt"] = 0;
+
+	buttonsPress["leftThumb"] = 0;
+	buttonsPress["rightThumb"] = 0;
+
+	buttonsPress["dUp"] = 0;
+	buttonsPress["dDown"] = 0;
+	buttonsPress["dLeft"] = 0;
+	buttonsPress["dRight"] = 0;
+	buttonsPress["start"] = 0;
+	buttonsPress["select"] = 0;
+
+
+
+
+
+
+
+
 }
 
 Gamepad::~Gamepad()
@@ -128,3 +160,24 @@ StickVal Gamepad::getRightStick()
 	return rightStick; 
 }
 
+bool Gamepad::buttonPress(std::string k)
+{
+	if (buttonsPress[k] == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void Gamepad::setButtonDown(std::string k, bool d) {
+	buttons[k] = d; 
+	
+	if (d)
+	{
+		buttonsPress[k] += 1;
+	}
+	else {
+		buttonsPress[k] = 0;
+	}
+}

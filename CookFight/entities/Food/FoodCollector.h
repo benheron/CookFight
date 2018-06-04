@@ -4,6 +4,16 @@
 #include "Food.h"
 
 
+struct FoodStateType
+{
+	FoodStateType(std::string foodState, FoodType* ft) : foodState(foodState), ft(ft) {}
+	std::string foodState;
+	FoodType *ft;
+
+	FoodType * getFoodType() { return ft; }
+	std::string getFoodState() { return foodState; }
+
+};
 
 
 class FoodCollector : public InteractiveObject
@@ -20,11 +30,11 @@ public:
 	bool addFood(Food* f);
 
 	
-	std::vector<Food*> getFoodsCollected() { return foodsCollected; }
+	std::vector<FoodStateType*> getFoodsCollected() { return foodsCollected; }
 
-
+	void clearFood();
 
 protected:
-	std::vector<Food*> foodsCollected;
+	std::vector<FoodStateType*> foodsCollected;
 
 };

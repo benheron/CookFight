@@ -12,7 +12,7 @@ public:
 	/**
 	@brief Entity constructor with  position, dimensions, uvsize of an individual element and whether or not it is a container
 	*/
-	ItemSlot(Texture* entTexture, Texture* foodTexture, glm::vec3 pos = glm::vec3(0), glm::vec3 dimens = glm::vec3(0), glm::vec2 uvSize = glm::vec2(0), glm::vec3 offPos = glm::vec3(0), bool container = false);
+	ItemSlot(Texture* entTexture, Food* foodItem, glm::vec3 pos = glm::vec3(0), glm::vec3 dimens = glm::vec3(0), glm::vec2 uvSize = glm::vec2(0));
 
 	~ItemSlot();
 
@@ -21,7 +21,7 @@ public:
 	virtual void update(float dt);
 
 	
-	virtual glm::vec2 getTextureUVOffset();
+	//virtual glm::vec2 getTextureUVOffset();
 
 	Food *getFoodItem() { return foodItem; }
 

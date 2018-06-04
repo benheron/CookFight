@@ -70,6 +70,10 @@ void Actor::actorInit()
 	hitboxPosRel = glm::vec3(0, 12, 0);
 
 
+	hurtBox = new BoundingBox(glm::vec3(-1.f, -1.f, 0), glm::vec3(1.f, 1.f, 0));
+	hurtBoxScale = dimensScale;
+
+	updateHurtBox();
 	//if using large sprites
 	//hitboxDimensScale *= 2;
 	//hitboxPosRel *= 2;
@@ -80,7 +84,7 @@ void Actor::actorInit()
 void Actor::update(float dt)
 {
 	WorldObject::update(dt);
-
+	updateHurtBox();
 	velocity.x += acceleration.x *dt;
 	velocity.y += acceleration.y *dt;
 
@@ -292,6 +296,29 @@ void Actor::updateFloorHitBox()
 
 
 	fHBMatrix = m;
+}
+
+void Actor::updateHurtBox()
+{
+	glm::mat4 mm = glm::mat4(1.0);
+
+	glm::vec3 jointPos = pos + offsetPos;
+
+	mm = glm::translate(mm, jointPos);
+
+	//rotate x
+	mm = glm::rotate(mm, rotPitch, glm::vec3(1, 0, 0));
+	//rotate y
+	mm = glm::rotate(mm, rotYaw, glm::vec3(0, 1, 0));
+	//rotate z
+	mm = glm::rotate(mm, rotRoll, glm::vec3(0, 0, 1));
+
+	//scale
+	mm = glm::scale(mm, hurtBoxScale);
+
+
+	hurtBox->transformByMat4(mm);
+
 }
 
 void Actor::moveRight(float dt)

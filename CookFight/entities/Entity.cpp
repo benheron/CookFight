@@ -60,6 +60,11 @@ Entity::~Entity()
 	{
 		delete entModels[i];
 	}
+
+	for (int i = children.size()-1; i > -1; i--)
+	{
+		delete children[i];
+	}
 }
 
 

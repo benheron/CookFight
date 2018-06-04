@@ -9,9 +9,9 @@
 #include <vector>
 #include "Platform.h"
 #include "states/StateManager.h"
-#include "states/GameState.h"
+#include "states/MainMenuState.h"
+#include "states/PauseState.h"
 #include "Renderer.h"
-#include "ResourceManager.h"
 #include "input/Gamepad.h"
 
 
@@ -40,7 +40,7 @@ bool gTimeStop = false;
 KeyboardManager *kbManager;
 
 const int JOYSTICK_DEAD_ZONE = 6000;
-//Game Controller 1 handler
+
 
 std::vector<SDL_GameController*> gameControllers;
 std::vector<Gamepad*> gamePads;
@@ -290,6 +290,8 @@ void close()
 		SDL_GameControllerClose(gameControllers[i]);
 		gameControllers[i] = NULL;
 	}
+
+	
 	
 	//Destroy window	
 	SDL_DestroyWindow( gWindow );
@@ -307,7 +309,7 @@ int main( int argc, char* args[] )
 
 //	Platform *platform = new Platform("OpenGL project!", glm::vec2(1920.f, 1080.f));
 
-
+	
 	srand(time(NULL));
 	
 	kbManager = new KeyboardManager();
@@ -360,8 +362,18 @@ int main( int argc, char* args[] )
 
 	
 	StateManager *stateManager = new StateManager();
+
+
+	PauseState *ps = new PauseState(stateManager, platform, rm);
+
+	rm->setPauseState(ps);
 	GameState *gs = new GameState(stateManager, platform, rm);
-	stateManager->addState(gs);
+	MainMenuState *mms = new MainMenuState(stateManager, platform, rm);
+	//stateManager->addState(gs);
+
+	stateManager->addState(mms);
+
+	
 
 	Renderer* renderer = new Renderer(platform, rm);
 
@@ -455,6 +467,8 @@ int main( int argc, char* args[] )
 				
 			}
 		}
+
+		kbManager->update();
 		
 		if (pollControllers)
 		{
@@ -465,22 +479,28 @@ int main( int argc, char* args[] )
 		
 		}
 		
-		
-
+		if (!quit)
+		{
+			quit = stateManager->eventHandler();
+		}
 		stateManager->update(dt);
+
+		
 
 
 		renderer->render(stateManager->getStates());
 		renderer->renderScreenSpace(stateManager->getStates());
 
-		//renderer->renderFrameRate(fr);
+	//	renderer->renderFrameRate(fr);
 			
 		//Update screen
 		SDL_GL_SwapWindow( platform->getWindow() );
 	}
 		
 
-	
+	delete rm;
+	delete platform;
+	delete stateManager;
 
 	//Free resources and close SDL
 	close();

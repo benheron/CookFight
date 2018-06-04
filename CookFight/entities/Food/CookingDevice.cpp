@@ -1,6 +1,7 @@
 #include "CookingDevice.h"
 
-CookingDevice::CookingDevice(Texture* entTexture, Texture* iconTexture, ProgressBar* pb, FoodTypeManager* ftm,  glm::vec3 pos, glm::vec3 dimens, glm::vec2 uvSize) : InteractiveObject(entTexture, pos, dimens, uvSize), cookProgBar(pb)
+CookingDevice::CookingDevice(Texture* entTexture, Texture* iconTexture, ProgressBar* pb, Audio* cookingGrowl, FoodTypeManager* ftm,  glm::vec3 pos, glm::vec3 dimens, glm::vec2 uvSize) 
+	: InteractiveObject(entTexture, pos, dimens, uvSize), cookProgBar(pb), cookingGrowl(cookingGrowl)
 {
 	cookDevInit(ftm, iconTexture);
 }
@@ -51,37 +52,52 @@ void CookingDevice::update(float dt)
 {
 	InteractiveObject::update(dt);
 
-	for (int i = 0; i < foodsInDevice.size(); i++)
+	if (isCooking)
 	{
-		cookingTimer->update(dt);
-		cookProgBar->setProgressValue(100.f-cookingTimer->getPercentLeft());
-
-		if (cookingTimer->getTimerFinished())
+		if (!cookingGrowl->isPlaying())
 		{
-			foodsInDevice[i]->setFoodState("Cooked");
-			cookingTimer->stopTrackingTime();
-			cookProgBar->setBlendColour(glm::vec4(0.0f, 1.f, 0.f, 1.f));
+			cookingGrowl->playAudio(-1);
 		}
-
-		if (foodsInDevice[i]->getFoodState() == "Cooked")
+		for (int i = 0; i < foodsInDevice.size(); i++)
 		{
-			std::string id = foodsInDevice[i]->getFoodType()->getID();
-			Entity *thisChild = children[i];
+			cookingTimer->update(dt);
+			cookProgBar->setProgressValue(100.f - cookingTimer->getPercentLeft());
 
-			if (id == "Meat")
+			if (cookingTimer->getTimerFinished())
 			{
-				thisChild->setBlendColour(glm::vec4(0.737f, 0.462f, 0.122f, 1));
+				foodsInDevice[i]->setFoodState("Cooked");
+				cookingTimer->stopTrackingTime();
+				cookProgBar->setBlendColour(glm::vec4(0.0f, 1.f, 0.f, 1.f));
+				isCooking = false;
 			}
-			else if (id == "Veg")
+
+			if (foodsInDevice[i]->getFoodState() == "Cooked")
 			{
-				thisChild->setBlendColour(glm::vec4(0.62f, 0.31f, 0.0f, 1));
-			}
-			else if (id == "Fruit")
-			{
-				thisChild->setBlendColour(glm::vec4(0.478f, 0.0f, 0.0f, 1));
+				std::string id = foodsInDevice[i]->getFoodType()->getID();
+				Entity *thisChild = children[i];
+
+				if (id == "Meat")
+				{
+					thisChild->setBlendColour(glm::vec4(0.737f, 0.462f, 0.122f, 1));
+				}
+				else if (id == "Veg")
+				{
+					thisChild->setBlendColour(glm::vec4(0.62f, 0.31f, 0.0f, 1));
+				}
+				else if (id == "Fruit")
+				{
+					thisChild->setBlendColour(glm::vec4(0.478f, 0.0f, 0.0f, 1));
+				}
 			}
 		}
 	}
+	else {
+		if (cookingGrowl->isPlaying())
+		{
+			cookingGrowl->stopAudio();
+		}
+	}
+	
 }
 
 bool CookingDevice::addFood(Food* f)
@@ -130,6 +146,8 @@ bool CookingDevice::addFood(Food* f)
 
 				cookingTimer->startTrackingTime();
 
+				isCooking = true;
+
 				break;
 			}
 		}
@@ -148,6 +166,10 @@ void CookingDevice::getFood(Food* f)
 	f->setFoodType(foodsInDevice[0]->getFoodType());
 	f->setFoodState(foodsInDevice[0]->getFoodState());
 
+	if (foodsInDevice[0]->getFoodType()->getID() != "None")
+	{
+		isCooking = false;
+	}
 
 	cookingTimer->setTimer();
 	cookProgBar->setShouldRender(false);
@@ -157,4 +179,17 @@ void CookingDevice::getFood(Food* f)
 
 	children[0]->setShouldRender(false);
 
+}
+
+
+void CookingDevice::resetCookDevice(FoodTypeManager* ftm)
+{
+	
+	cookingTimer->setTimer();
+	cookProgBar->setShouldRender(false);
+
+	foodsInDevice[0]->setFoodType(ftm->getFoodType("None"));
+	foodsInDevice[0]->setFoodState("Raw");
+
+	children[0]->setShouldRender(false);
 }

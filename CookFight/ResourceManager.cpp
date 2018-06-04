@@ -1,3 +1,5 @@
+
+#include "states/PauseState.h"
 #include "ResourceManager.h"
 
 ResourceManager::ResourceManager(KeyboardManager *km, std::vector<Gamepad*> gamePads) : km(km), gamePads(gamePads)
@@ -7,7 +9,17 @@ ResourceManager::ResourceManager(KeyboardManager *km, std::vector<Gamepad*> game
 
 ResourceManager::~ResourceManager()
 {
+	delete ttmng;
+	delete timg;
+	delete km;
+	delete mmng;
+	delete ssmng;
+	delete bgmng;
 
+	for (int i = gamePads.size() - 1; i > -1; i--)
+	{
+		delete gamePads[i];
+	}
 }
 
 void ResourceManager::initResources()
@@ -19,13 +31,14 @@ void ResourceManager::initResources()
 	std::string playerCharSpriteSheet = "res/txt/chefcop.txt";
 
 	ssmng = new SpriteSheetManager(playerCharSpriteSheet);
-	
+
 	bgmng = new BackgroundManager("res/txt/backgrounds.txt");
 
 
-
+	amng = new AudioManager("res/txt/audio.txt");
 
 	ftmng = new FoodTypeManager("res/txt/food.txt");
+
 }
 
 TextImageManager* ResourceManager::getTextImageManager()

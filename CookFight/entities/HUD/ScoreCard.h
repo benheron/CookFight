@@ -14,7 +14,7 @@ public:
 
 	void addFoodCollected(FoodCollector* fc);
 
-
+	void resetScore() { score = 0; }
 	
 
 protected:
@@ -33,7 +33,9 @@ protected:
 	std::vector<Text*> foodStatesTextObj;
 
 
-
+	std::unordered_map<std::string, std::unordered_map<std::string, Text*>> foodsText;
 	int score;
+
+	Text* scoreTextObj;
 
 };

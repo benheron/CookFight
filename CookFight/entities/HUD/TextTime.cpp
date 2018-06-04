@@ -14,6 +14,8 @@ void TextTime::textTimeInit(TextImageManager *timng)
 {
 	timeString = "00 : 00 : 000";
 	timeText = new Text(pos, "arial", 32, timeString, timng);
+
+	setPosition(glm::vec3(0, 0, 0));
 }
 
 void TextTime::update(float dt)

@@ -1,6 +1,6 @@
 #include "Projectile.h"
 
-Projectile::Projectile(Texture* entTexture, FoodType* foodTypeGiven, glm::vec3 pos, glm::vec3 dimens, glm::vec2 uvSize) : WorldObject(entTexture, pos, dimens, uvSize), foodTypeGiven(foodTypeGiven)
+Projectile::Projectile(Texture* entTexture, Food* foodGiven, glm::vec3 pos, glm::vec3 dimens, glm::vec2 uvSize) : WorldObject(entTexture, pos, dimens, uvSize), foodGiven(foodGiven)
 {
 	projectileInit();
 }
@@ -32,7 +32,7 @@ void Projectile::projectileInit()
 {
 	thrown = false;
 
-	hitboxDimensScale *= 0.6f;
+	hitboxDimensScale *= 0.65f;
 }
 
 void Projectile::calculateYFromHeight()
@@ -48,4 +48,10 @@ void Projectile::setThrown(bool t)
 	{
 		rotRoll = 0;
 	}
+}
+
+glm::vec2 Projectile::getTextureUVOffset()
+{
+	
+	return foodTypeGiven->getSpriteOffset(foodState);
 }

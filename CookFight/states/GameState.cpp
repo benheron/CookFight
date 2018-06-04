@@ -1,9 +1,11 @@
 #include "GameState.h"
 #include "GameOverState.h"
+#include "PauseState.h"
 
 GameState::GameState(StateManager* manager, Platform *platform, ResourceManager* rm) : State(manager, platform), rm(rm)
 {
 	km = rm->getKeyboardManager();
+	stateName = "GameState";
 //	gp = rm->getGamepad();
 }
 
@@ -21,12 +23,40 @@ bool GameState::eventHandler()
 }
 
 void GameState::update(float dt)
-{
+{ 
+	std::string pauseAction = rm->getPauseState()->getPauseAction();
+	if (pauseAction == "retry")
+	{
+		resetGame();
+	}
+	else if (pauseAction == "resume")
+	{
+		for(int i = 0; i < sounds.size(); i++)
+		{
+			sounds[i]->resumeAudio();
+		}
+
+	}
+
+
 	if (!gameFinished)
 	{
-		for (int gamePadIndex = 0; gamePadIndex < rm->getNumGamePads(); gamePadIndex++)
+		for (int gamePadIndex = 0; gamePadIndex < players.size(); gamePadIndex++)
 		{
-			Gamepad* gp = rm->getGamepad(gamePadIndex);
+			int otherPlayerIndex;
+
+			if (gamePadIndex == 0)
+			{
+				otherPlayerIndex = rm->getNumGamePads()-1;
+			}
+			else {
+				otherPlayerIndex = 0;
+			}
+
+
+
+
+			gp = rm->getGamepad(gamePadIndex);
 			Chef* currentPlayer = players[gamePadIndex];
 			float xDir = 0;
 			float yDir = 0;
@@ -157,49 +187,17 @@ void GameState::update(float dt)
 			}
 
 
-			/*
-			if (!km->keyDown("a") &&
-			!km->keyDown("d") &&
-			!km->keyDown("w") &&
-			!km->keyDown("s") &&
-			!gp->buttonDown("dLeft") &&
-			!gp->buttonDown("dRight") &&
-			!gp->buttonDown("dUp") &&
-			!gp->buttonDown("dDown")
-			)
-			{
-			e1->setMoving(false);
-
-			}*/
 
 			if (km->keyDown("c"))
 			{
 				cameraFollow = !cameraFollow;
 			}
 
-			/*if (km->keyDown("j") || km->keyDown("space") || gp->buttonDown("a"))
-			{
+			
 
 
-			if (!pressingPickup)
-			{
-			pressingPickup = true;
-			pressingPickupBuffer = 0.16f;
-			}
-			}
-			else
-			{
-			pressingPickupBuffer -= dt;
-			if (pressingPickupBuffer < 0.f)
-			{
-			pressingPickup = false;
-			}
-
-			}*/
-
-
-
-			if (km->keyDown("j") || km->keyDown("space") || gp->buttonDown("a") || pressingPickupBuffer[gamePadIndex] > 0.f)
+			//picking up and putting down food
+			if (km->keyPressed("j") || km->keyPressed("space") || gp->buttonPress("a") || pressingPickupBuffer[gamePadIndex] > 0.f)
 			{
 
 
@@ -214,7 +212,7 @@ void GameState::update(float dt)
 
 					pressingPickup[gamePadIndex] = true;
 
-
+					//picking up food from foodbox
 					for (int i = 0; i < foodBoxes.size(); i++)
 					{
 						if (Collision::SATIntersection(currentPlayer->getBoundingBox(), foodBoxes[i]->getInteractBoundingBox()))
@@ -223,6 +221,8 @@ void GameState::update(float dt)
 							currentPlayer->setFoodHeldState(foodBoxes[i]->getFoodState());
 
 							pressingPickupBuffer[gamePadIndex] = 0.f;
+							rm->getAudioManager()->getSFXByName("Bop")->playAudio(0);
+							break;
 						}
 						else {
 							
@@ -230,7 +230,7 @@ void GameState::update(float dt)
 					}
 
 
-
+					//placing or picking up food from food device
 					if (Collision::SATIntersection(currentPlayer->getBoundingBox(), cookDev->getInteractBoundingBox()))
 					{
 
@@ -248,9 +248,15 @@ void GameState::update(float dt)
 						}
 						else
 						{
+							
 							cookDev->getFood(currentPlayer->getFoodHeld());
 							pressingPickupBuffer[gamePadIndex] = 0.f;
-	
+							if (currentPlayer->getFoodHeld()->getFoodType()->getID() != "None")
+							{
+								rm->getAudioManager()->getSFXByName("Bop")->playAudio(0);
+								
+							}
+							
 
 						}
 					}
@@ -263,10 +269,11 @@ void GameState::update(float dt)
 								foodCollects[f]->addFood(currentPlayer->getFoodHeld());
 								currentPlayer->setFoodHeldType(rm->getFoodTypeManager()->getFoodType("None"));
 								pressingPickupBuffer[gamePadIndex] = 0.f;
+								rm->getAudioManager()->getSFXByName("Ding")->playAudio(0);
 							}
 						}
 					}
-					
+
 				}
 
 			}
@@ -283,7 +290,9 @@ void GameState::update(float dt)
 				pressingPickupBuffer[gamePadIndex] = 0.f;
 			}
 
-			if (km->keyDown("k") || gp->buttonDown("x"))
+			//throwing item
+
+			if (km->keyPressed("k") || gp->buttonPress("x"))
 			{
 				if (!pressingThrowItem[gamePadIndex])
 				{
@@ -299,7 +308,8 @@ void GameState::update(float dt)
 
 							projBank.pop_back();
 
-							p->setTextureUVOffset(currentPlayer->getFoodHeld()->getFoodType()->getSpriteOffset(currentPlayer->getFoodHeld()->getFoodState()));
+							//p->setTextureUVOffset(currentPlayer->getFoodHeld()->getFoodType()->getSpriteOffset(currentPlayer->getFoodHeld()->getFoodState()));
+							p->setProjectileFood(currentPlayer->getFoodHeld());
 							p->setPosition(currentPlayer->getPosition());
 
 							switch (currentPlayer->getActorState())
@@ -329,19 +339,66 @@ void GameState::update(float dt)
 			}
 
 
-
+			if (gp->buttonPress("y"))
+			{
+				gameFinished = true;
+				if (!takenAway[gamePadIndex])
+				{
+					takenAway[gamePadIndex] = true;
+				}
+				
+			}
+			else {
+				takenAway[gamePadIndex] = false;
+			}
 
 
 			//update current player
 			currentPlayer->update(dt);
+
+			float healthPercent = float((currentPlayer->getHealth()) / float(currentPlayer->getMaxHealth()) *100.f);
 			
+			healthBars[gamePadIndex]->setProgressValue(healthPercent);
 
 			std::vector<Projectile*> curPlayProj = currentPlayer->getChefProjectiles();
 			std::vector<int> projectileIndexDelete;
 
+			//go through projectiles per player
 			for (int i = 0; i < curPlayProj.size(); i++)
 			{
 				curPlayProj[i]->update(dt);
+
+				if (Collision::SATIntersection(curPlayProj[i]->getBoundingBox(), players[otherPlayerIndex]->getHurtBox()))
+				{
+					projBank.push_back(curPlayProj[i]);
+
+					curPlayProj[i]->setShouldRender(false);
+					curPlayProj[i]->setPosition(glm::vec3(-200, -200, -200));
+					curPlayProj[i]->setVelocity(glm::vec3(0));
+					curPlayProj[i]->setThrown(false);
+					curPlayProj.erase(curPlayProj.begin() + i);
+					currentPlayer->removeProjectile(i);
+					i--;
+
+					players[otherPlayerIndex]->setHealth(-4, true);
+
+					int  ranNum = rand() % 3;
+
+					switch (ranNum)
+					{
+					case 0:
+						rm->getAudioManager()->getSFXByName("FoodExplode1")->playAudio(0);
+						break;
+					case 1:
+						rm->getAudioManager()->getSFXByName("FoodExplode3")->playAudio(0);
+						break;
+					case 2:
+						rm->getAudioManager()->getSFXByName("FoodExplode4")->playAudio(0);
+						break;
+					default:
+						break;
+					}
+				} else
 
 				if (mn->collideWithTile(curPlayProj[i], dt))
 				{
@@ -357,13 +414,10 @@ void GameState::update(float dt)
 				}
 			}
 
+			
 
 
-
-			if (km->keyDown("h"))
-			{
-				pb->setProgressValue(60.f *dt, true);
-			}
+			
 
 
 			for (int i = 0; i < entities.size(); i++)
@@ -385,7 +439,7 @@ void GameState::update(float dt)
 			{
 
 
-				glm::vec3 camPos = (e1->getCentrePosition()) - glm::vec3(platform->getRenderSize() / 2.f, 0);
+				glm::vec3 camPos = (players[0]->getCentrePosition()) - glm::vec3(platform->getRenderSize() / 2.f, 0);
 				glm::vec2 camDim = camera->getDimensions();
 
 
@@ -410,7 +464,7 @@ void GameState::update(float dt)
 				}
 				camPos *= glm::vec3(-1.f);
 
-				camera->setPosition(camPos);
+				//camera->setPosition(camPos);
 
 
 
@@ -419,8 +473,22 @@ void GameState::update(float dt)
 				camPos = glm::vec3(round(camPos.x), round(camPos.y), 0);
 
 
-				//bg->update(dt, camPos);
 
+			}
+
+			if (currentPlayer->getHealth() == 0)
+			{
+				gameFinished = true;
+			}
+
+		
+
+
+		
+			//pause game
+			if (gp->buttonPress("start") || km->keyPressed("esc"))
+			{
+				pause = true;
 			}
 			
 		}
@@ -428,9 +496,25 @@ void GameState::update(float dt)
 		levelTimerText->update(dt);
 		if (levelTimer->getTimerFinished())
 		{
-			//gameFinished = true;
+			gameFinished = true;
 		}
 
+		if (pause)
+		{
+			pause = false;
+			std::vector<int> channelsUsed;
+			for (int i = 0; i < sounds.size(); i++)
+			{
+				sounds[i]->pauseAudio();
+			}
+			stateManager->addState(rm->getPauseState());
+			rm->getPauseState()->pauseStateReference(pauseAction);
+
+			
+
+			
+		}
+		
 		
 	}
 	else
@@ -444,7 +528,17 @@ void GameState::update(float dt)
 
 				addedToScoreCard = true;
 			}
+			playAgainText->setShouldRender(true);
 			
+		}
+		for (int gamePadIndex = 0; gamePadIndex < players.size(); gamePadIndex++)
+		{
+			gp = rm->getGamepad(gamePadIndex);
+			//reset values
+			if (km->keyPressed("h") || gp->buttonPress("start") || gp->buttonPress("a"))
+			{
+				resetGame();
+			}
 		}
 		
 	}
@@ -455,8 +549,22 @@ void GameState::update(float dt)
 void GameState::load()
 {
 	gameFinished = false;
+	pause = false;
 	
+	pauseAction = "";
+
+	origTimerValue = glm::vec3(2.0f, 0.f, 0.f);
+
 	camera->setDimensions(platform->getRenderSize());
+
+	float centreRenderX = platform->getRenderSize().x / 2.f;
+	bgMusic = rm->getAudioManager()->getMusicByName("Ingame");
+	bgMusic->playAudio(-1);
+
+	sounds.push_back(rm->getAudioManager()->getMusicByName("Ingame"));
+	sounds.push_back(rm->getAudioManager()->getSFXByName("CookGrowl"));
+	sounds.push_back(rm->getAudioManager()->getSFXByName("Bop"));
+	sounds.push_back(rm->getAudioManager()->getSFXByName("Ding"));
 
 	//initialise player button press booleans
 	for (int i = 0; i < rm->getNumGamePads(); i++)
@@ -466,10 +574,24 @@ void GameState::load()
 
 		bool pressThrow = false;
 
+		
+
+		
+
 		pressingPickup.push_back(pressPick);
 		pressingPickupBuffer.push_back(pickBuff);
 
 		pressingThrowItem.push_back(pressThrow);
+
+
+
+
+
+
+
+		bool takAway = false;
+
+		takenAway.push_back(takAway);
 	}
 
 	
@@ -490,20 +612,16 @@ void GameState::load()
 	
 	Texture* t2 = new Texture("res/img/hobLarge.png");
 
-	glm::vec3 hobPos = glm::vec3(140, 90, 0);
-
-	hob = new WorldObject(t2, hobPos);
-
-	entities.push_back(hob);
 
 
 
 
 	Texture* t3 = new Texture("res/img/table.png");
 
-	glm::vec3 tabPos = glm::vec3(250, 140, 0);
+	glm::vec3 tabPos = glm::vec3(centreRenderX, 140, 0);
 
 	table = new WorldObject(t3, tabPos);
+	table->setCentre(tabPos);
 
 	entities.push_back(table);
 
@@ -514,29 +632,36 @@ void GameState::load()
 
 
 
-	glm::vec3 entPos = glm::vec3(0, 0, 0);
+
+	glm::vec3 player1Pos = glm::vec3(80, 70, 0);
+	glm::vec3 player2Pos = glm::vec3(500, 70, 0);
+
+	playerStartingPositions.push_back(player1Pos);
+	playerStartingPositions.push_back(player2Pos);
+
+	std::vector<glm::vec4> blendColours;
+
+	glm::vec4 bc1 = glm::vec4(1.f, 1.f, 1.f, 1.f);
+	glm::vec4 bc2 = glm::vec4(0.82f, 0.f, 0.f, 1.f);
+	
+	blendColours.push_back(bc1);
+	blendColours.push_back(bc2);
+
 	//glm::vec3 entDimens = glm::vec3(0, 0, 0);
 	
-	e1 = new Chef(rm->getSpriteSheetManager()->getSpriteSheetByID("Chefcop"), entPos, glm::vec3(28,40,0));
-
-	players.push_back(e1);
-
-	
-
-	e1->setPosition(glm::vec3(80, 70, 0));
-	//e1->setRoll(Collision::PI/2, false);
-
-	Chef *e2 = new Chef(rm->getSpriteSheetManager()->getSpriteSheetByID("Chefcop"), entPos, glm::vec3(28, 40, 0));
-	e2->setBlendColour(glm::vec4(0.82f, 0.f, 0.f, 1.f));
-
-
-	e2->setPosition(glm::vec3(500, 70, 0));
-
-	players.push_back(e2);
+//	e1 = new Chef(rm->getSpriteSheetManager()->getSpriteSheetByID("Chefcop"), entPos, glm::vec3(28,40,0));
 
 
 
-	collisionObjects.push_back(hob);
+
+
+	for (int i = 0; i < rm->getNumGamePads(); i++)
+	{
+		Chef *ch = new Chef(rm->getSpriteSheetManager()->getSpriteSheetByID("Chefcop"), playerStartingPositions[i], glm::vec3(28, 40, 0));
+		ch->setBlendColour(blendColours[i]);
+		players.push_back(ch);
+	}
+
 
 	collisionObjects.push_back(table);
 	
@@ -549,57 +674,78 @@ void GameState::load()
 	Texture* t1 = new Texture("res/img/chefitemborder.png");
 	Entity* ep = new Entity(t1, glm::vec3(16, 16, 0));
 
+	glm::vec3 ogPos = glm::vec3(16, 16, 0);
+	glm::vec3 rightItemSlotPos = glm::vec3(platform->getRenderSize().x, 16, 0) - glm::vec3(t1->getOrigDimens().x +16.f, 0, 0);
+
+	
+
 	glm::vec3 itemPos = ep->getPosition() + glm::vec3(2, 2, 0);
 
-	glm::vec3 itemPos2 = ep->getPosition() + glm::vec3(400, 2, 0);
+	glm::vec3 itemPos2 = rightItemSlotPos + glm::vec3(2, 2, 0);
 
 
+	
 
 	
 	f2 = new Food(rm->getFoodTypeManager()->getFoodSpriteSheet(), rm->getFoodTypeManager()->getFoodType("None"), "Raw", itemPos, glm::vec3(22, 22, 0));
 	Food * foodPlayer2 = new Food(rm->getFoodTypeManager()->getFoodSpriteSheet(), rm->getFoodTypeManager()->getFoodType("None"), "Raw", itemPos2, glm::vec3(22, 22, 0));
 
-	e1->setFoodHeld(f2);
-	e2->setFoodHeld(foodPlayer2);
-
-	hudElements.push_back(ep);
 
 
-	hudElements.push_back(f2);
+	ItemSlot *is1 = new ItemSlot(t1, f2, ogPos);
+	ItemSlot *is2 = new ItemSlot(t1, foodPlayer2, rightItemSlotPos);
 
-	hudElements.push_back(foodPlayer2);
+	std::vector<Food*> foodieThings;
+	foodieThings.push_back(f2);
+	foodieThings.push_back(foodPlayer2);
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		players[i]->setFoodHeld(foodieThings[i]);
+	}
+
+
+	//e1->setFoodHeld(f2);
+	//e2->setFoodHeld(foodPlayer2);
+
+	//hudElements.push_back(ep);
+
+
+	hudElements.push_back(is1);
+
+	hudElements.push_back(is2);
 
 	float rightHandxPos = platform->getRenderSize().x - 34 - t2->getOrigDimens().x;
 
 	//meatbox
-	FoodBox *fb = new FoodBox(t2,  rm->getFoodTypeManager()->getFoodType("Meat"), "Raw", glm::vec3(34, 300,0));
+	FoodBox *fb = new FoodBox(t2,  rm->getFoodTypeManager()->getFoodType("Meat"), "Raw", glm::vec3(34, 250,0));
 	fb->setBlendColour(glm::vec4(1.f, 0.43f, 0.78f, 1));
 
 	foodBoxes.push_back(fb);
 
 
-	FoodBox *fb2 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Veg"), "Raw", glm::vec3(34, 350, 0));
+	FoodBox *fb2 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Veg"), "Raw", glm::vec3(34, 300, 0));
 	fb2->setBlendColour(glm::vec4(0.99f, 0.42f, 0.007f, 1));
 
 	foodBoxes.push_back(fb2);
 
-	FoodBox *fb3 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Fruit"), "Raw", glm::vec3(34, 400, 0));
+	FoodBox *fb3 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Fruit"), "Raw", glm::vec3(34, 350, 0));
 	fb3->setBlendColour(glm::vec4(1.f, 0, 0, 1));
 
 	foodBoxes.push_back(fb3);
 
-	FoodBox *fb4 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Meat"), "Raw", glm::vec3(rightHandxPos, 300, 0));
+	FoodBox *fb4 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Meat"), "Raw", glm::vec3(rightHandxPos, 250, 0));
 	fb4->setBlendColour(glm::vec4(1.f, 0.43f, 0.78f, 1));
 
 	foodBoxes.push_back(fb4);
 
 
-	FoodBox *fb5 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Veg"), "Raw", glm::vec3(rightHandxPos, 350, 0));
+	FoodBox *fb5 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Veg"), "Raw", glm::vec3(rightHandxPos, 300, 0));
 	fb5->setBlendColour(glm::vec4(0.99f, 0.42f, 0.007f, 1));
 
 	foodBoxes.push_back(fb5);
 
-	FoodBox *fb6 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Fruit"), "Raw", glm::vec3(rightHandxPos, 400, 0));
+	FoodBox *fb6 = new FoodBox(t2, rm->getFoodTypeManager()->getFoodType("Fruit"), "Raw", glm::vec3(rightHandxPos, 350, 0));
 	fb6->setBlendColour(glm::vec4(1.f, 0, 0, 1));
 
 	foodBoxes.push_back(fb6);
@@ -626,12 +772,18 @@ void GameState::load()
 	Texture *iconsText = new Texture("res/img/cookdeviceicon.png");
 
 
+	
 
 	//Cooking device
-	cookDev = new CookingDevice(t2, iconsText, pb, rm->getFoodTypeManager(), glm::vec3(400, 380, 0), glm::vec3(50, 50, 0), glm::vec3(24, 34, 0));
+	cookDev = new CookingDevice(t2, iconsText, pb, rm->getAudioManager()->getSFXByName("CookGrowl"), rm->getFoodTypeManager(), glm::vec3(400, 380, 0), glm::vec3(50, 50, 0), glm::vec3(24, 34, 0));
 	cookDev->setBlendColour(glm::vec4(0.f, 1.f, 0.f, 1.f));
+	cookDev->setCentre(glm::vec3(centreRenderX, 300, 0));
 	entities.push_back(cookDev);
 	collisionObjects.push_back(cookDev);
+
+
+
+	
 
 	
 	//Food Collectors
@@ -651,15 +803,21 @@ void GameState::load()
 	
 
 	//add player last so on top of everything else
-	entities.push_back(e1);
-	entities.push_back(e2);
 
+	for (int i = 0; i < players.size(); i++)
+	{
+		entities.push_back(players[i]);
+	}
+	
+
+
+	Food* projFood = new Food(rm->getFoodTypeManager()->getFoodSpriteSheet(), rm->getFoodTypeManager()->getFoodType("None"), "Raw", itemPos, glm::vec3(-400, -400, 0));
 
 	int numProj = 100;
 
 	for (int i = 0; i < numProj; i++)
 	{
-		Projectile *p = new Projectile(e1->getFoodHeld()->getFoodType()->getTexture(), e1->getFoodHeld()->getFoodType(), e1->getPosition(), glm::vec3(22, 22, 0));
+		Projectile *p = new Projectile(rm->getFoodTypeManager()->getFoodTypeTexture(), projFood, glm::vec3(-400,-400,0), glm::vec3(22, 22, 0));
 		p->setShouldRender(false);
 		projBank.push_back(p);
 		entities.push_back(p);
@@ -672,7 +830,7 @@ void GameState::load()
 	//f2->setFoodType(e1->getFoodHeld()->getFoodType());
 
 	
-	levelTimer = new Timer(0, 40.f);
+	levelTimer = new Timer(origTimerValue.x, origTimerValue.y, origTimerValue.z);
 
 	levelTimerText = new TextTime(rm->getTextImageManager(), levelTimer);
 
@@ -682,6 +840,26 @@ void GameState::load()
 
 	//score card
 
+
+
+	Texture *ol2 = new Texture("res/img/outline.png");
+	//Texture *barTe = new Texture("res/img/bartex.png");
+
+	ProgressBar* pb2 = new ProgressBar(barTe, ol2, glm::vec3(34, 50, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
+
+	ProgressBar* pb3 = new ProgressBar(barTe, ol2, glm::vec3(600, 50, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
+
+	healthBars.push_back(pb2);
+	healthBars.push_back(pb3);
+
+	//hudElements.push_back(pb2);
+	for (int i = 0; i < healthBars.size(); i++)
+	{
+		hudElements.push_back(healthBars[i]);
+	}
+
+
+
 	Texture *scBack = new Texture("res/img/scorebackground.png");
 
 	scoreBackground = new Entity(scBack);
@@ -690,6 +868,7 @@ void GameState::load()
 	glm::vec3 centreScBa;
 	centreScBa.x = platform->getRenderSize().x / 4.f;
 	centreScBa.y = platform->getRenderSize().y / 2.f;
+	centreScBa.z = 0;
 
 	scoreBackground->setCentre(centreScBa);
 
@@ -702,26 +881,45 @@ void GameState::load()
 	scoCard->setCentre(centreScBa);
 
 	ScoreCard* sc = new ScoreCard(scBack, rm->getFoodTypeManager(), rm->getTextImageManager());
-	centreScBa.x *= 3;
+	centreScBa.x *= 3.f;
 
 	sc->setCentre(centreScBa);
 	scorCards.push_back(scoCard);
 	scorCards.push_back(sc);
+
 
 	for (int i = 0; i < scorCards.size(); i++)
 	{
 		scorCards[i]->setShouldRender(false);
 		hudElements.push_back(scorCards[i]);
 	}
+
 	
-	
+	float textYP = platform->getRenderSize().y - (platform->getRenderSize().y / 10.f);
+
+	//textYP = 450.f;
+	playAgainText = new Text(rm->getTextImageManager(), "Press A to play again!",  32, "arial", glm::vec3(0, 0, 0));
+	playAgainText->setCentre(glm::vec3(centreRenderX, textYP, 0));
+	playAgainText->setBlendColour(glm::vec4(1.0f, 1.f, 0.f, 1.0f));
+	playAgainText->setShouldRender(false);
+	hudElements.push_back(playAgainText);
 	
 }
 
 void GameState::unload()
 {
+	for (int i = entities.size() -1; i > -1; i--)
+	{
+		delete entities[i];
+	}
+	entities.clear();
 	
-	delete mn;
+
+	for (int i = hudElements.size() -1; i > -1; i--)
+	{
+		delete hudElements[i];
+	}
+	hudElements.clear();
 }
 
 bool GameState::collisionWithObjects(Actor *e1)
@@ -734,13 +932,6 @@ bool GameState::collisionWithObjects(Actor *e1)
 
 		if (Collision::SATSupport(e1->getBoundingBox(), collisionObjects[i]->getBoundingBox(), pdEnt, pdTile))
 		{
-
-
-
-
-			
-
-
 
 			glm::vec3 changPos;
 			glm::vec3 colDir;
@@ -780,4 +971,59 @@ bool GameState::collisionWithObjects(Actor *e1)
 	}
 	return collision;
 
+}
+
+
+void GameState::resetGame()
+{
+	for (int i = 0; i < players.size(); i++)
+	{
+		players[i]->setPosition(playerStartingPositions[i]);
+		players[i]->setFoodHeldType(rm->getFoodTypeManager()->getFoodType("None"));
+	}
+
+	for (int i = 0; i < foodCollects.size(); i++)
+	{
+		foodCollects[i]->clearFood();
+	}
+	cookDev->resetCookDevice(rm->getFoodTypeManager());
+
+	gameFinished = false;
+
+	for (int i = 0; i < scorCards.size(); i++)
+	{
+		scorCards[i]->resetScore();
+		scorCards[i]->setShouldRender(false);
+
+		addedToScoreCard = false;
+	}
+
+	for (int i = 0; i < players.size(); i++)
+	{
+		players[i]->setFullHealth();
+		players[i]->setActorState(downState);
+		players[i]->setVelocity(glm::vec3(0));
+		std::vector<Projectile*> curPlayProj = players[i]->getChefProjectiles();
+		std::vector<int> projectileIndexDelete;
+
+		for (int j = 0; j < curPlayProj.size(); j++)
+		{
+			curPlayProj[j]->setShouldRender(false);
+			curPlayProj[j]->setPosition(glm::vec3(-200, -200, -200));
+			curPlayProj[j]->setVelocity(glm::vec3(0));
+			curPlayProj[j]->setThrown(false);
+			players[j]->removeProjectile(j);
+			curPlayProj.erase(curPlayProj.begin() + j);
+			
+			j--;
+		}
+
+	}
+
+	levelTimer->setTimer(origTimerValue.x, origTimerValue.y, origTimerValue.z);
+
+	playAgainText->setShouldRender(false);
+
+	bgMusic->stopAudio();
+	bgMusic->playAudio(-1);
 }

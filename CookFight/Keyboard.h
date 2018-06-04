@@ -33,7 +33,7 @@ private:
 	///The key values true/false
 	std::unordered_map<std::string, bool> keys;
 
-	std::unordered_map<std::string, bool> keyPress;
+	std::unordered_map<std::string, int> keyPress;
 
 
 };

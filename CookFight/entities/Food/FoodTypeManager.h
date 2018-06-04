@@ -54,6 +54,12 @@ public:
 	*/
 	Texture* getFoodTypeTexture(std::string foodTypeID);
 
+	/**
+	@brief Gets the food texture
+	@returns The food texture 
+	*/
+	Texture* getFoodTypeTexture() { return foodTexture; }
+
 
 	/**
 	@brief Gets the food size
