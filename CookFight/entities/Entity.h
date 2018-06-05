@@ -173,7 +173,7 @@ public:
 	@brief Sets the blend colour to apply to the texture
 	@param bc The blend Colour to apply to the texture
 	*/
-	void setBlendColour(glm::vec4 bc) { blendColour = bc; }
+	virtual void setBlendColour(glm::vec4 bc) { blendColour = bc; }
 
 
 	/**

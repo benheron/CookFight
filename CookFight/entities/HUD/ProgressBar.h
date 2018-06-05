@@ -15,6 +15,8 @@ public:
 
 	virtual void setCentre(glm::vec3 p);
 
+	virtual void setBlendColour(glm::vec4 bc) { colouredBar->setBlendColour(bc); }
+
 protected:
 	Entity *outlineEnt;
 	Entity *colouredBar;

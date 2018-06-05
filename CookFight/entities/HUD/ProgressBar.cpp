@@ -14,8 +14,8 @@ ProgressBar::~ProgressBar()
 
 void ProgressBar::progBarInit(Texture* outline)
 {
-	setProgressValue(0.f);
-	//blendColour = glm::vec4(1.0f, 0.f, 0.f, 1.f);
+	
+	blendColour = glm::vec4(.0f, .0f, .0f, 0.6f);
 
 	
 
@@ -23,10 +23,12 @@ void ProgressBar::progBarInit(Texture* outline)
 	colouredBar = new Entity(entTextures[0], pos);
 	colouredBar->setDimens(maxDimens);
 
-	colouredBar->setBlendColour(glm::vec4(.0f, .0f, .0f, 0.5f));
+	//colouredBar->setBlendColour(glm::vec4(.0f, .0f, .0f, 0.5f));
 
 	children.push_back(colouredBar);
 	children.push_back(outlineEnt);
+
+	setProgressValue(0.f);
 	
 }
 
@@ -56,12 +58,12 @@ void ProgressBar::setProgressValue(float val, bool add)
 	
 
 	glm::vec3 newDimens = glm::vec3(maxDimens.x * (progressValue / 100.f), maxDimens.y, 0);
-	setDimens(newDimens);
+	colouredBar->setDimens(newDimens);
 
 	
 
-	updateModelMatrix();
-	updateBoundingBoxMatrix();
+	colouredBar->updateModelMatrix();
+	colouredBar->updateBoundingBoxMatrix();
 }
 
 void ProgressBar::setCentre(glm::vec3 p)
