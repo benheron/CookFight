@@ -53,7 +53,7 @@ void PauseState::update(float dt)
 			indexHighlighted -= 1;
 		}
 
-		if (gp->buttonPress("a"))
+		if (gp->buttonPress("a") || rm->getKeyboardManager()->keyPressed("enter"))
 		{
 			actionString = buttons[indexHighlighted]->getAction();
 			buttonPressed = true;

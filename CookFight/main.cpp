@@ -274,6 +274,7 @@ void handleKeys(SDL_Event events, bool bKeyDown, int x, int y)
 	case SDLK_LEFT: kbManager->setKeyDown("left", bKeyDown); break;
 	case SDLK_RIGHT: kbManager->setKeyDown("right", bKeyDown); break;
 	case SDLK_ESCAPE: kbManager->setKeyDown("esc", bKeyDown); break;
+	case SDLK_RETURN: kbManager->setKeyDown("enter", bKeyDown); break;
 
 	case SDLK_LSHIFT: kbManager->setKeyDown("shift", bKeyDown); break;
 	case SDLK_RSHIFT: kbManager->setKeyDown("shift", bKeyDown); break;

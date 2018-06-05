@@ -81,32 +81,19 @@ void Text::update(float dt)
 
 }
 
-/*
-void Text::render(SDL_Renderer* renderer)
-{
-	for (int i = 0; i < textString.size(); i++)
-	{
-		textString[i]->render(renderer);
-	}
-}
-*/
 
 void Text::changeCharacter(int index, std::string textChar)
 {
-	textString[index]->setTextCharacterType(timng->getTextCharacterTypeByLetter(textChar));
-	theText.replace(index, 1, textChar);
-
-	int uvsPerCharacter = 6;
-
-	std::vector<glm::vec2> cUVs = textString[index]->getTextCharacterUVs();
-	model->changeUVBUffer(index * uvsPerCharacter, cUVs);
-	/*for (int i = 0; i < uvsPerCharacter; i++)
+	if (index < theText.size())
 	{
-		std::vector<glm::vec2> cUVs = textString[i]->getTextCharacterUVs();
-		
+		textString[index]->setTextCharacterType(timng->getTextCharacterTypeByLetter(textChar));
+		theText.replace(index, 1, textChar);
 
-		UVs.at(uvsPerCharacter*index + i) = cUVs[2];
-	}*/
+		int uvsPerCharacter = 6;
+
+		std::vector<glm::vec2> cUVs = textString[index]->getTextCharacterUVs();
+		model->changeUVBUffer(index * uvsPerCharacter, cUVs);
+	}
 }
 
 std::string Text::getText()

@@ -1,6 +1,6 @@
 #include "TextTime.h"
 
-TextTime::TextTime(TextImageManager *timng, TimeTracker* timeTracked) : Entity(), timeTracked(timeTracked)
+TextTime::TextTime(TextImageManager *timng, TimeTracker* timeTracked, bool colonSpaces, bool showMills) : Entity(), timeTracked(timeTracked), colonSpaces(colonSpaces), showMills(showMills)
 {
 	textTimeInit(timng);
 }
@@ -12,10 +12,24 @@ TextTime::~TextTime()
 
 void TextTime::textTimeInit(TextImageManager *timng)
 {
-	timeString = "00 : 00 : 000";
+	
+	timeString = "00 : 00";
+
+	if (showMills)
+	{
+		timeString += " : 000";
+	}
+
+	if (!colonSpaces)
+	{
+		removeSpaces();
+	}
+	
+
+	//timeString = "00 : 00 : 000";
 	timeText = new Text(pos, "arial", 32, timeString, timng);
 
-	setPosition(glm::vec3(0, 0, 0));
+	dimens = timeText->getDimensions();
 }
 
 void TextTime::update(float dt)
@@ -51,15 +65,23 @@ void TextTime::update(float dt)
 
 	timeString = stringMin + " : " + stringSec + " : " + stringMil;
 
+	if (!colonSpaces)
+	{
+		removeSpaces();
+	}
+
 	std::string curDisplayTime = timeText->getText();
 	for (int i = 0; i < timeString.length(); i++)
 	{
-		std::string cdt = curDisplayTime.substr(i, 1);
-		std::string ets = timeString.substr(i, 1);
-
-		if (cdt != ets)
+		if (i < curDisplayTime.size())
 		{
-			timeText->changeCharacter(i, timeString.substr(i, 1));
+			std::string cdt = curDisplayTime.substr(i, 1);
+			std::string ets = timeString.substr(i, 1);
+
+			if (cdt != ets)
+			{
+				timeText->changeCharacter(i, timeString.substr(i, 1));
+			}
 		}
 	}
 	
@@ -69,3 +91,16 @@ void TextTime::update(float dt)
 std::vector<Model*> TextTime::getModels() {
 	return timeText->getModels();
 }
+
+void TextTime::removeSpaces()
+{
+	for (int i = 0; i < timeString.size(); i++)
+	{
+		if (timeString[i] == ' ')
+		{
+			timeString.erase(i, 1);
+		}
+	}
+}
+
+

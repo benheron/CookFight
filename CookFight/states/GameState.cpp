@@ -833,6 +833,7 @@ void GameState::load()
 	levelTimer = new Timer(origTimerValue.x, origTimerValue.y, origTimerValue.z);
 
 	levelTimerText = new TextTime(rm->getTextImageManager(), levelTimer);
+	levelTimerText->setCentre(glm::vec3(centreRenderX, 20, 0));
 
 	levelTimerText->startTime();
 
@@ -845,9 +846,9 @@ void GameState::load()
 	Texture *ol2 = new Texture("res/img/outline.png");
 	//Texture *barTe = new Texture("res/img/bartex.png");
 
-	ProgressBar* pb2 = new ProgressBar(barTe, ol2, glm::vec3(34, 50, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
+	ProgressBar* pb2 = new ProgressBar(barTe, ol2, glm::vec3(60, 20, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
 
-	ProgressBar* pb3 = new ProgressBar(barTe, ol2, glm::vec3(600, 50, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
+	ProgressBar* pb3 = new ProgressBar(barTe, ol2, glm::vec3(600, 20, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
 
 	healthBars.push_back(pb2);
 	healthBars.push_back(pb3);
@@ -1012,7 +1013,7 @@ void GameState::resetGame()
 			curPlayProj[j]->setPosition(glm::vec3(-200, -200, -200));
 			curPlayProj[j]->setVelocity(glm::vec3(0));
 			curPlayProj[j]->setThrown(false);
-			players[j]->removeProjectile(j);
+			players[i]->removeProjectile(j);
 			curPlayProj.erase(curPlayProj.begin() + j);
 			
 			j--;

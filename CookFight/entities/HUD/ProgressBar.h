@@ -17,6 +17,7 @@ public:
 
 protected:
 	Entity *outlineEnt;
+	Entity *colouredBar;
 
 	float progressValue;
 

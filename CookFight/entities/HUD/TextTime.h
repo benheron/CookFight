@@ -5,7 +5,7 @@
 class TextTime : public Entity
 {
 public:
-	TextTime(TextImageManager *timng, TimeTracker* tt);
+	TextTime(TextImageManager *timng, TimeTracker* tt, bool colonSpaces = false, bool showMills = false);
 	~TextTime();
 
 	void textTimeInit(TextImageManager *timng);
@@ -20,6 +20,10 @@ public:
 
 	void stopTime() { timeTracked->stopTrackingTime(); }
 
+
+	void removeSpaces();
+
+
 	
 
 private:
@@ -27,4 +31,8 @@ private:
 	Text* timeText;
 
 	TimeTracker* timeTracked;
+
+	bool showMills;
+
+	bool colonSpaces;
 };

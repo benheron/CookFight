@@ -47,7 +47,7 @@ void MainMenuState::update(float dt)
 			rm->getAudioManager()->getSFXByName("OptionSelect")->playAudio(0);
 		}
 
-		if (gp->buttonPress("a"))
+		if (gp->buttonPress("a") || rm->getKeyboardManager()->keyPressed("enter"))
 		{
 			actionString = buttons[indexHighlighted]->getAction();
 			buttonPressed = true;

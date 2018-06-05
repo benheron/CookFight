@@ -89,7 +89,17 @@ public:
 	/**
 	@brief
 	*/
+	void setPosition(glm::vec2 p, bool add = false) { setPosition(glm::vec3(p, 0), add); }
+
+	/**
+	@brief
+	*/
 	virtual void setCentre(glm::vec3 p);
+
+	/**
+	@brief
+	*/
+	virtual void setCentre(glm::vec2 p) { setCentre(glm::vec3(p, 0)); }
 
 	/**
 	@brief
