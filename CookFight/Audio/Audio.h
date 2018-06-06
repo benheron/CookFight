@@ -34,6 +34,8 @@ public:
 
 	int getSFXChannel() { return sfxChannel; }
 
+	bool setPlaybackSpeed();
+
 protected:
 	Mix_Music *music;
 	Mix_Chunk *sfx;

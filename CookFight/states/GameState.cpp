@@ -35,6 +35,7 @@ void GameState::update(float dt)
 		{
 			sounds[i]->resumeAudio();
 		}
+		currentBgMusic->resumeAudio();
 
 	}
 
@@ -166,8 +167,11 @@ void GameState::update(float dt)
 				mag = -1;
 			}
 
-
-			currentPlayer->moveActor(dir, mag, dt);
+			if (currentPlayer->getHitStunTimer() <= 0.f)
+			{
+				currentPlayer->moveActor(dir, mag, dt);
+			}
+			
 
 
 
@@ -366,10 +370,14 @@ void GameState::update(float dt)
 			//go through projectiles per player
 			for (int i = 0; i < curPlayProj.size(); i++)
 			{
+				//update projectile's position
 				curPlayProj[i]->update(dt);
 
+				//check if colliding with the other player
 				if (Collision::SATIntersection(curPlayProj[i]->getBoundingBox(), players[otherPlayerIndex]->getHurtBox()))
 				{
+					glm::vec3 projVel = curPlayProj[i]->getVelocity()/1.7f;
+
 					projBank.push_back(curPlayProj[i]);
 
 					curPlayProj[i]->setShouldRender(false);
@@ -379,8 +387,17 @@ void GameState::update(float dt)
 					curPlayProj.erase(curPlayProj.begin() + i);
 					currentPlayer->removeProjectile(i);
 					i--;
-
-					players[otherPlayerIndex]->setHealth(-4, true);
+					
+					//take health away
+					//apply knockback and hitstun
+					if (!players[otherPlayerIndex]->getInvincible())
+					{
+						players[otherPlayerIndex]->setHealth(-4, true);
+						players[otherPlayerIndex]->setHit(true);
+						players[otherPlayerIndex]->setVelocity(projVel);
+						players[otherPlayerIndex]->setHitStunTimer(0.2f);
+					}
+					
 
 					int  ranNum = rand() % 3;
 
@@ -398,8 +415,9 @@ void GameState::update(float dt)
 					default:
 						break;
 					}
-				} else
-
+				} 
+				else
+					//colliding with tile
 				if (mn->collideWithTile(curPlayProj[i], dt))
 				{
 					projBank.push_back(curPlayProj[i]);
@@ -507,6 +525,7 @@ void GameState::update(float dt)
 			{
 				sounds[i]->pauseAudio();
 			}
+			currentBgMusic->pauseAudio();
 			stateManager->addState(rm->getPauseState());
 			rm->getPauseState()->pauseStateReference(pauseAction);
 
@@ -514,13 +533,30 @@ void GameState::update(float dt)
 
 			
 		}
+		float tf = levelTimer->getTimeLeft();
+
+		if (tf < 15)
+		{
+			if (!playingBGSpedUp)
+			{
+				currentBgMusic->stopAudio();
+				currentBgMusic = bgMusic2x;
+				currentBgMusic->playAudio(-1);
+				playingBGSpedUp = true;
+			}
 		
+
+			
+			//printf("Time left: %f \n", tf);
+		}
+
 		
 	}
 	else
 	{
 		if (!addedToScoreCard)
 		{
+			currentBgMusic->stopAudio();
 			for (int i = 0; i < scorCards.size(); i++)
 			{
 				scorCards[i]->addFoodCollected(foodCollects[i]);
@@ -558,10 +594,17 @@ void GameState::load()
 	camera->setDimensions(platform->getRenderSize());
 
 	float centreRenderX = platform->getRenderSize().x / 2.f;
+
+	playingBGSpedUp = false;
+
 	bgMusic = rm->getAudioManager()->getMusicByName("Ingame");
 	bgMusic->playAudio(-1);
 
-	sounds.push_back(rm->getAudioManager()->getMusicByName("Ingame"));
+	bgMusic2x = rm->getAudioManager()->getMusicByName("Ingame2x");
+
+	currentBgMusic = bgMusic;
+
+	//sounds.push_back(currentBgMusic);
 	sounds.push_back(rm->getAudioManager()->getSFXByName("CookGrowl"));
 	sounds.push_back(rm->getAudioManager()->getSFXByName("Bop"));
 	sounds.push_back(rm->getAudioManager()->getSFXByName("Ding"));
@@ -601,9 +644,6 @@ void GameState::load()
 	mn = new MapRoom(rm->getMapManager(), rm->getTileTypeManager(), "M01");
  
 
-	/*bg = new Background(rm->getBackgroundManager()->getBackgroundsByID("Grassland"), mn->getDimensions());
-
-	entities.push_back(bg);*/
 	entities.push_back(mn);
 
 	std::vector<Entity*> mnb = mn->getTilesEntities("B");
@@ -846,6 +886,9 @@ void GameState::load()
 	Texture *ol2 = new Texture("res/img/outline.png");
 	//Texture *barTe = new Texture("res/img/bartex.png");
 
+
+	
+
 	ProgressBar* pb2 = new ProgressBar(barTe, ol2, glm::vec3(60, 20, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
 
 	ProgressBar* pb3 = new ProgressBar(barTe, ol2, glm::vec3(600, 20, 0), glm::vec3(80, 20, 0), glm::vec3(1, 1, 0));
@@ -859,7 +902,18 @@ void GameState::load()
 		hudElements.push_back(healthBars[i]);
 	}
 
+	Text* healthText1 = new Text(rm->getTextImageManager(), "Health", 32, "arial");
+	Text* healthText2 = new Text(rm->getTextImageManager(), "Health", 32, "arial");
 
+	healthText1->setPosition(glm::vec3(pb2->getPosition().x, pb2->getPosition().y - 15.f, 0));
+	healthText2->setPosition(glm::vec3(pb3->getPosition().x, pb3->getPosition().y - 15.f, 0));
+
+	healthText1->setScale(glm::vec3(0.55f));
+	healthText2->setScale(glm::vec3(0.55f));
+	
+
+	hudElements.push_back(healthText1);
+	hudElements.push_back(healthText2);
 
 	Texture *scBack = new Texture("res/img/scorebackground.png");
 
@@ -981,6 +1035,7 @@ void GameState::resetGame()
 	{
 		players[i]->setPosition(playerStartingPositions[i]);
 		players[i]->setFoodHeldType(rm->getFoodTypeManager()->getFoodType("None"));
+		players[i]->setInvincible(false);
 	}
 
 	for (int i = 0; i < foodCollects.size(); i++)
@@ -1025,6 +1080,8 @@ void GameState::resetGame()
 
 	playAgainText->setShouldRender(false);
 
-	bgMusic->stopAudio();
-	bgMusic->playAudio(-1);
+	currentBgMusic->stopAudio();
+	currentBgMusic = bgMusic;
+	currentBgMusic->playAudio(-1);
+	playingBGSpedUp = false;
 }

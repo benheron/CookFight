@@ -11,6 +11,8 @@ public:
 	Chef(glm::vec3 pos = glm::vec3(0), glm::vec3 dimens = glm::vec3(0), glm::vec2 uvSize = glm::vec2(0), glm::vec3 offPos = glm::vec3(0), bool container = false);
 	~Chef();
 
+	virtual void update(float dt);
+
 	void chefInit();
 	void setFoodHeldType(FoodType* ft);
 
@@ -41,6 +43,18 @@ public:
 
 	void addHealth(int h) { health += h; }
 
+	bool getHit() { return hit; }
+
+	void setHit(bool h) { hit = h; invincible = true; invinTimer = 1.5f; }
+
+	bool getInvincible() { return invincible; }
+
+	void setInvincible(bool i) { invincible = i; }
+
+	void setHitStunTimer(float hst) { hitStunTimer = hst; }
+
+	float getHitStunTimer() { return hitStunTimer; }
+
 protected:
 	Food *foodHeld;
 
@@ -50,5 +64,18 @@ protected:
 
 	std::vector<Projectile*> projectiles;
 
+	bool hit;
+
+	bool invincible;
+
+	float hitTimer;
+
+	float invinTimer;
+
+	float flashTimer;
+
+	float hitStunTimer;
+
+	
 	
 };

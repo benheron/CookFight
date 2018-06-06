@@ -161,4 +161,11 @@ protected:
 	std::vector<Audio*> sounds;
 	Audio* bgMusic;
 
+	Audio* bgMusic2x;
+
+	Audio* currentBgMusic;
+
+	bool playingBGSpedUp;
+
+
 };

@@ -23,7 +23,7 @@ void ProgressBar::progBarInit(Texture* outline)
 	colouredBar = new Entity(entTextures[0], pos);
 	colouredBar->setDimens(maxDimens);
 
-	//colouredBar->setBlendColour(glm::vec4(.0f, .0f, .0f, 0.5f));
+
 
 	children.push_back(colouredBar);
 	children.push_back(outlineEnt);

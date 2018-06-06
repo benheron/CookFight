@@ -1,0 +1,10 @@
+res/img/food.png
+4
+2
+22 22
+Raw
+Cooked
+Fruit
+Meat
+Veg
+None

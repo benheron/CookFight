@@ -73,6 +73,9 @@ private:
 
 	void decelerate(glm::vec2 axis, float dt);
 
+	void chooseState(glm::vec2 xyMag);
+
+
 	bool alive;
 
 

@@ -21,7 +21,40 @@ void Chef::chefInit()
 	maxHealth = 50;
 	health = maxHealth;
 
+	hit = false;
+	invincible = false;
 
+	flashTimer = 0.f;
+	hitStunTimer = 0.f;
+}
+
+void Chef::update(float dt)
+{
+	Actor::update(dt);
+	if (invincible)
+	{
+		invinTimer -= dt;
+		flashTimer += dt;
+		if (invinTimer <= 0.f)
+		{
+			invincible = false;
+		}
+
+		if (flashTimer > 3.f/60.f)
+		{
+			flashTimer = 0.f;
+			shouldRender = !shouldRender;
+		}
+		
+	}
+	else {
+		shouldRender = true;
+	}
+
+	if (hitStunTimer > 0.f)
+	{
+		hitStunTimer -= dt;
+	}
 }
 
 void Chef::setFoodHeld(Food *f)

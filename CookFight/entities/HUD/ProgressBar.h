@@ -17,6 +17,8 @@ public:
 
 	virtual void setBlendColour(glm::vec4 bc) { colouredBar->setBlendColour(bc); }
 
+	void setBackgroundBlendColour(glm::vec4 bc) { blendColour = bc; }
+
 protected:
 	Entity *outlineEnt;
 	Entity *colouredBar;

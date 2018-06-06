@@ -150,9 +150,9 @@ void Actor::update(float dt)
 
 	pos += velocity *dt;
 
-	//printf("Vel x: %f, Vel y: %f \n", velocity.x, velocity.y);
 
 
+/*
 
 	if (velocity.x > 0.01f)
 	{
@@ -189,19 +189,20 @@ void Actor::update(float dt)
 
 	float relVel = abs(velocity.x) - abs(velocity.y);
 
-	
+
 	if (relVel < 20 && relVel > -20)
 	{
 		if (velocity.x > 0.01f)
 		{
 			aState = rightState;
-		} else
-
-		if (velocity.x < -0.01f)
-		{
-			aState = leftState;
 		}
-	}
+		else
+
+			if (velocity.x < -0.01f)
+			{
+				aState = leftState;
+			}
+	}*/
 
 
 	//animation
@@ -496,15 +497,56 @@ void Actor::moveActor(glm::vec2 axis, float mag, float dt)
 
 	}
 
-	//velocity += glm::vec3(axis * speed * dt, 0);
-
-	/*if (abs(axis.x) == 0 &&
-		abs(axis.y) == 0)
-	{
-		velocity = glm::vec3(0);
-	}*/
-
 	modelMatChanged = true;
+
+
+
+
+	
+	float xMag = abs(axis.x) * mag;
+
+	float yMag = abs(axis.y) * mag;
+	
+	glm::vec2 xyMag = axis * mag;
+
+	chooseState(xyMag);
+	
+}
+
+void Actor::chooseState(glm::vec2 xyMag)
+{
+	if (xyMag.x > 0.01f)
+	{
+		if (abs(xyMag.x) >= abs(xyMag.y))
+		{
+			aState = rightState;
+		}
+
+	}
+
+	if (xyMag.x < -0.01f)
+	{
+		if (abs(xyMag.x) >= abs(xyMag.y))
+		{
+			aState = leftState;
+		}
+	}
+
+	if (xyMag.y > 0.01f)
+	{
+		if (abs(xyMag.y) > abs(xyMag.x))
+		{
+			aState = downState;
+		}
+	}
+
+	if (xyMag.y < -0.01f)
+	{
+		if (abs(xyMag.y) > abs(xyMag.x))
+		{
+			aState = upState;
+		}
+	}
 }
 
 void Actor::decelerate(glm::vec2 axis, float dt)

@@ -143,7 +143,7 @@ public:
 	///set new dimensions
 	void setDimens(glm::vec3 nd, bool add = false);
 
-
+	
 
 	///rotate across x axis
 	void setYaw(float rot, bool add = false);
