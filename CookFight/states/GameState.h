@@ -13,6 +13,7 @@
 
 #include "../entities/Food/CookingDevice.h"
 #include "../entities/Food/FoodCollector.h"
+#include "../entities/Food/FoodTable.h"
 #include "../entities/HUD/TextTime.h"
 
 #include "../entities/HUD/ScoreCard.h"
@@ -167,5 +168,5 @@ protected:
 
 	bool playingBGSpedUp;
 
-
+	FoodTable* fodTab;
 };

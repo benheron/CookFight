@@ -221,12 +221,16 @@ void GameState::update(float dt)
 					{
 						if (Collision::SATIntersection(currentPlayer->getBoundingBox(), foodBoxes[i]->getInteractBoundingBox()))
 						{
-							currentPlayer->setFoodHeldType(foodBoxes[i]->getFoodTypeGiven());
-							currentPlayer->setFoodHeldState(foodBoxes[i]->getFoodState());
+							//if food is held
+							if (currentPlayer->getFoodHeld()->getFoodType()->getID() == "None")
+							{
+								currentPlayer->setFoodHeldType(foodBoxes[i]->getFoodTypeGiven());
+								currentPlayer->setFoodHeldState(foodBoxes[i]->getFoodState());
 
-							pressingPickupBuffer[gamePadIndex] = 0.f;
-							rm->getAudioManager()->getSFXByName("Bop")->playAudio(0);
-							break;
+								pressingPickupBuffer[gamePadIndex] = 0.f;
+								rm->getAudioManager()->getSFXByName("Bop")->playAudio(0);
+								break;
+							}
 						}
 						else {
 							
@@ -264,6 +268,8 @@ void GameState::update(float dt)
 
 						}
 					}
+
+					//checking food collectors
 					for (int f = 0; f < foodCollects.size(); f++)
 					{
 						if (Collision::SATIntersection(currentPlayer->getBoundingBox(), foodCollects[f]->getInteractBoundingBox()))
@@ -275,6 +281,20 @@ void GameState::update(float dt)
 								pressingPickupBuffer[gamePadIndex] = 0.f;
 								rm->getAudioManager()->getSFXByName("Ding")->playAudio(0);
 							}
+						}
+					}
+
+					if (Collision::SATIntersection(currentPlayer->getBoundingBox(), fodTab->getInteractBoundingBox()))
+					{
+						if (currentPlayer->getFoodHeld()->getFoodType()->getID() != "None")
+						{
+							if (fodTab->addFood(currentPlayer->getFoodHeld(), gamePadIndex))
+							{
+								currentPlayer->setFoodHeldType(rm->getFoodTypeManager()->getFoodType("None"));
+								pressingPickupBuffer[gamePadIndex] = 0.f;
+								rm->getAudioManager()->getSFXByName("Ding")->playAudio(0);
+							}
+							
 						}
 					}
 
@@ -340,6 +360,15 @@ void GameState::update(float dt)
 			}
 			else {
 				pressingThrowItem[gamePadIndex] = false;
+			}
+
+
+			if (gp->buttonDown("lb") || gp->getTriggerNormalised("left") > 0.3f)
+			{
+				currentPlayer->setLockDir(true);
+			}
+			else {
+				currentPlayer->setLockDir(false);
 			}
 
 
@@ -418,7 +447,7 @@ void GameState::update(float dt)
 				} 
 				else
 					//colliding with tile
-				if (mn->collideWithTile(curPlayProj[i], dt))
+				if (mn->collideWithTile(curPlayProj[i], dt, true))
 				{
 					projBank.push_back(curPlayProj[i]);
 
@@ -556,6 +585,7 @@ void GameState::update(float dt)
 	{
 		if (!addedToScoreCard)
 		{
+			rm->getAudioManager()->getSFXByName("PanLid")->playAudio(0);
 			currentBgMusic->stopAudio();
 			for (int i = 0; i < scorCards.size(); i++)
 			{
@@ -589,7 +619,10 @@ void GameState::load()
 	
 	pauseAction = "";
 
-	origTimerValue = glm::vec3(2.0f, 0.f, 0.f);
+	origTimerValue = glm::vec3(2.0f, 1.f, 0.f);
+
+
+//	origTimerValue = glm::vec3(0.0f, 7.f, 0.f);
 
 	camera->setDimensions(platform->getRenderSize());
 
@@ -663,11 +696,14 @@ void GameState::load()
 	table = new WorldObject(t3, tabPos);
 	table->setCentre(tabPos);
 
-	entities.push_back(table);
+	//entities.push_back(table);
 
 
-
-
+	fodTab = new FoodTable(t3, rm->getFoodTypeManager());
+	fodTab->setCentre(tabPos);
+	
+	entities.push_back(fodTab);
+	collisionObjects.push_back(fodTab);
 
 
 
@@ -703,8 +739,7 @@ void GameState::load()
 	}
 
 
-	collisionObjects.push_back(table);
-	
+
 
 
 	
@@ -1077,6 +1112,8 @@ void GameState::resetGame()
 	}
 
 	levelTimer->setTimer(origTimerValue.x, origTimerValue.y, origTimerValue.z);
+
+	fodTab->clearFood();
 
 	playAgainText->setShouldRender(false);
 

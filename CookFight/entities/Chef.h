@@ -55,6 +55,9 @@ public:
 
 	float getHitStunTimer() { return hitStunTimer; }
 
+
+	
+
 protected:
 	Food *foodHeld;
 
@@ -75,6 +78,7 @@ protected:
 	float flashTimer;
 
 	float hitStunTimer;
+
 
 	
 	

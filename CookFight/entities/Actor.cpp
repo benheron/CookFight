@@ -53,7 +53,7 @@ void Actor::actorInit()
 
 	aState = downState;
 
-
+	lockLookDir = false;
 	//set animation
 
 	AnimationType* atype = actorSpriteSheet->getAnimationType("D");
@@ -500,16 +500,19 @@ void Actor::moveActor(glm::vec2 axis, float mag, float dt)
 	modelMatChanged = true;
 
 
+	if (!lockLookDir)
+	{
+		float xMag = abs(axis.x) * mag;
 
+		float yMag = abs(axis.y) * mag;
+
+		glm::vec2 xyMag = axis * mag;
+
+		chooseState(xyMag);
+	}
 
 	
-	float xMag = abs(axis.x) * mag;
-
-	float yMag = abs(axis.y) * mag;
 	
-	glm::vec2 xyMag = axis * mag;
-
-	chooseState(xyMag);
 	
 }
 

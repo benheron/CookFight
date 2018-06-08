@@ -181,3 +181,11 @@ void Gamepad::setButtonDown(std::string k, bool d) {
 		buttonsPress[k] = 0;
 	}
 }
+
+
+float Gamepad::getTriggerNormalised(std::string k)
+{
+	float triggerNormal = trigger[k] / STICK_MAX_POSITIVE;
+
+	return triggerNormal;
+}

@@ -19,6 +19,8 @@ public:
 
 	float getTriggerValue(std::string k) { return trigger[k]; }
 
+	float getTriggerNormalised(std::string k);
+
 	void setThumb(float xval, float yval, int type);
 
 	StickVal getLeftStick(bool ignoreDeadZone = false);

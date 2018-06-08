@@ -27,7 +27,7 @@ void FoodTypeManager::loadFoodData(std::string filePath)
 		int numFoodStates;
 		glm::vec2 dimensions;
 		
-		foodDimens = glm::vec3(dimensions, 0);
+		
 
 		file >> textureFilePath;
 		file >> numFood;
@@ -36,6 +36,8 @@ void FoodTypeManager::loadFoodData(std::string filePath)
 
 		file >> dimensions.x;
 		file >> dimensions.y;
+
+		foodDimens = glm::vec3(dimensions, 0);
 
 		foodTexture = new Texture(textureFilePath);
 		glm::vec2 foodTextureDimens = foodTexture->getOrigDimens();

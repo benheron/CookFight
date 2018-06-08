@@ -69,6 +69,10 @@ public:
 
 	BoundingBox* getHurtBox() { return hurtBox; }
 
+	void setLockDir(bool lld) { lockLookDir = lld; }
+
+	bool getLockLookDir() { return lockLookDir; }
+
 private:
 
 	void decelerate(glm::vec2 axis, float dt);
@@ -120,6 +124,17 @@ private:
 
 	BoundingBox* hurtBox;
 	glm::vec3 hurtBoxScale;
+
+
+
+
+	bool lockLookDir;
+
+
+
+
+
+
 
 };
 

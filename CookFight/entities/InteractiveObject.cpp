@@ -52,3 +52,17 @@ void InteractiveObject::updateInteractHitboxMatrix()
 
 	interactHitbox->transformByMat4(mm);
 }
+
+
+void InteractiveObject::setPosition(glm::vec3 p, bool add)
+{
+	Entity::setPosition(p, add);
+	updateInteractHitboxMatrix();
+}
+
+
+void InteractiveObject::setCentre(glm::vec3 p)
+{
+	Entity::setCentre(p);
+	updateInteractHitboxMatrix();
+}

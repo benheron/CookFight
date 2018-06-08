@@ -55,7 +55,7 @@ public:
 
 	bool collideWithTile(Actor* e, float dt);
 
-	bool collideWithTile(Entity* e, float dt);
+	bool collideWithTile(Entity* e, float dt, bool isProjectile = false);
 
 
 

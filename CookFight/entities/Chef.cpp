@@ -26,6 +26,7 @@ void Chef::chefInit()
 
 	flashTimer = 0.f;
 	hitStunTimer = 0.f;
+
 }
 
 void Chef::update(float dt)

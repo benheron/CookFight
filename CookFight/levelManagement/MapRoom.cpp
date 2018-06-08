@@ -506,7 +506,7 @@ bool MapRoom::collideWithTile(Actor* e, float dt)
 }
 
 
-bool MapRoom::collideWithTile(Entity* e, float dt)
+bool MapRoom::collideWithTile(Entity* e, float dt, bool isProjectile)
 {
 	bool collision = false;
 
@@ -664,6 +664,15 @@ bool MapRoom::collideWithTile(Entity* e, float dt)
 						}
 
 						if (collideWithThisTile)
+						{
+							collision = true;
+						}
+
+						if (isProjectile && curTile->getTileTypeID() == "U0")
+						{
+							collision = false;
+						}
+						else if (isProjectile)
 						{
 							collision = true;
 						}

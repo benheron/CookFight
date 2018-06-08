@@ -37,6 +37,14 @@ public:
 	BoundingBox* getInteractBoundingBox() { return interactHitbox; }
 
 
+
+
+	virtual void setPosition(glm::vec3 p, bool add);
+
+
+	virtual void setCentre(glm::vec3 p);
+
+
 protected:
 	///The scale of the interactive bounding box
 	glm::vec3 interactHitboxScale;
