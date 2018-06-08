@@ -2,7 +2,7 @@
 ts TitleScreen res/audio/music/AperoHour.wav
 ps Ingame res/audio/music/HardBoiled.wav
 ps2x Ingame2x res/audio/music/HardBoiled2x.wav
-14
+15
 1 OptionSelect res/audio/sfx/optionselect2.wav
 2 Death res/audio/sfx/death2.wav
 3 Jump res/audio/sfx/jump.wav
@@ -17,3 +17,4 @@ ps2x Ingame2x res/audio/music/HardBoiled2x.wav
 12 Ding res/audio/sfx/ding.wav
 13 Bop res/audio/sfx/bop.wav
 14 CookGrowl res/audio/sfx/CookGrowl.wav
+15 PanLid res/audio/sfx/panlids.wav
