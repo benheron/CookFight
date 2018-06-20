@@ -271,10 +271,7 @@ void Renderer::addToScreen(std::vector<Entity*> entities, glm::mat4 projMat, glm
 
 	for (int i = 0; i < entities.size(); i++)
 	{
-		
-		
-
-
+	
 		std::vector<Model*> ms = entities[i]->getModels();
 
 		
@@ -290,7 +287,7 @@ void Renderer::addToScreen(std::vector<Entity*> entities, glm::mat4 projMat, glm
 				glUniformMatrix4fv(mvpID, 1, GL_FALSE, &mvp[0][0]);
 
 
-				glm::vec4 bc = entities[i]->getBlendColour();
+				glm::vec4 bc = entities[i]->getBlendBrightnessColour();
 
 				glUniform4fv(blendColourID, 1, &bc[0]);
 
@@ -341,13 +338,15 @@ void Renderer::addToScreen(std::vector<Entity*> entities, glm::mat4 projMat, glm
 
 			}
 
+			//render children
+			std::vector<Entity*> entChildren = entities[i]->getChildren();
+			if (entChildren.size() > 0)
+			{
+				addToScreen(entChildren, projMat, viewMat);
+			}
 		}
-		//render
-		std::vector<Entity*> entChildren = entities[i]->getChildren();
-		if (entChildren.size() > 0)
-		{
-			addToScreen(entChildren, projMat, viewMat);
-		}
+		
+		
 
 	}
 
