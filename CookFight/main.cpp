@@ -20,7 +20,8 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-
+int joyStickNum = 0;
+ResourceManager* rm;
 
 //Input handler
 void handleKeys(SDL_Event keyType, bool bKeyDown, int x, int y);
@@ -44,11 +45,18 @@ const int JOYSTICK_DEAD_ZONE = 6000;
 
 std::vector<SDL_GameController*> gameControllers;
 std::vector<Gamepad*> gamePads;
+std::unordered_map<int, int> indexFromInstance;
+
+std::unordered_map<int, Gamepad*> gamepadsMap;
+
+
+//std::unordered_map
 
 
 
-void handleController(SDL_GameController* gGameController, Gamepad* gp)
+void handleController(Gamepad* gp)
 {
+	SDL_GameController* gGameController = gp->getGameControllerReference();
 	if (SDL_GameControllerGetButton(gGameController,
 		SDL_CONTROLLER_BUTTON_A))
 	{
@@ -282,6 +290,64 @@ void handleKeys(SDL_Event events, bool bKeyDown, int x, int y)
 	}
 }
 
+void addController()
+{
+
+
+
+	SDL_GameController* gc = NULL;
+	gc = SDL_GameControllerOpen(joyStickNum);
+	SDL_GameControllerEventState(SDL_ENABLE);
+	printf("Added controller %i: \n", joyStickNum);
+
+	//gameControllers.push_back(gc);
+
+	Gamepad* gp = new Gamepad(gc);
+	rm->addGamepad(gp);
+	
+	//gamePads.push_back(gp);
+
+
+
+	int iid = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(gc));
+	indexFromInstance[iid] = joyStickNum;
+
+	rm->addGamepadToMap(gp, iid);
+
+	joyStickNum++;
+
+
+
+
+
+	
+
+}
+
+void removeController(int dInstance)
+{
+
+	int deviceIndex = indexFromInstance[dInstance];
+
+	printf("Removing controller: instance: %i, index: %i \n", dInstance, deviceIndex);
+
+
+
+
+	SDL_GameControllerClose(rm->getGamepad(deviceIndex)->getGameControllerReference());
+	rm->removeGamepad(deviceIndex);
+	//gameControllers[deviceIndex] = NULL;
+	//gameControllers.erase(gameControllers.begin() + deviceIndex);
+	
+
+
+	//gamePads.erase(gamePads.begin() + deviceIndex);
+	
+	joyStickNum--;
+
+	indexFromInstance.erase(dInstance);
+}
+
 
 
 void close()
@@ -306,7 +372,7 @@ void close()
 int main( int argc, char* args[] )
 {
 
-	Platform *platform = new Platform("OpenGL project!", glm::vec2(768.f, 432.f));
+	Platform *platform = new Platform("Battle Chefs", glm::vec2(768.f, 432.f));
 
 //	Platform *platform = new Platform("OpenGL project!", glm::vec2(1920.f, 1080.f));
 
@@ -332,7 +398,7 @@ int main( int argc, char* args[] )
 	{
 		for (int i = 0; i < numJoysticks; i++)
 		{
-			SDL_GameController* gc = NULL;
+			/*SDL_GameController* gc = NULL;
 			gc = SDL_GameControllerOpen(i);
 			SDL_GameControllerEventState(SDL_ENABLE);
 			pollControllers = true;
@@ -340,26 +406,27 @@ int main( int argc, char* args[] )
 			gameControllers.push_back(gc);
 
 			Gamepad* gp = new Gamepad();
-			gamePads.push_back(gp);
+			gamePads.push_back(gp);*/
+
+			
 
 
-
-			if (gc == NULL)
+			/*if (gc == NULL)
 			{
 				printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
 			}
 			else {
 				printf("Found controller!\n");
-			}
+			}*/
 		}
 		
 	}
 
 
 
-	
+	pollControllers = true;
 
-	ResourceManager* rm = new ResourceManager(kbManager, gamePads);
+	rm = new ResourceManager(kbManager, gamePads);
 
 	
 	StateManager *stateManager = new StateManager();
@@ -368,7 +435,7 @@ int main( int argc, char* args[] )
 	PauseState *ps = new PauseState(stateManager, platform, rm);
 
 	rm->setPauseState(ps);
-	GameState *gs = new GameState(stateManager, platform, rm);
+//	GameState *gs = new GameState(stateManager, platform, rm);
 	MainMenuState *mms = new MainMenuState(stateManager, platform, rm);
 	//stateManager->addState(gs);
 
@@ -464,7 +531,15 @@ int main( int argc, char* args[] )
 			case SDL_KEYUP:
 				handleKeys(e, false, x, y);
 				break;
-
+			case SDL_JOYDEVICEADDED:
+				printf("Controller added. Reference: %i  \n", e.jdevice.which);
+				addController();
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				printf("Controller removed \n");
+				 
+				removeController(e.jdevice.which);
+				break;
 				
 			}
 		}
@@ -473,10 +548,20 @@ int main( int argc, char* args[] )
 		
 		if (pollControllers)
 		{
-			for (int i = 0; i < gameControllers.size(); i++)
+			for (int i = 0; i < rm->getNumGamePads(); i++)
 			{
-				handleController(gameControllers[i], gamePads[i]);
+				handleController(rm->getGamepad(i));
 			}
+
+			/*std::unordered_map<int, Gamepad*> gpm = rm->getGamePadMap();
+			for (auto i : gpm)
+			{
+				
+
+				Gamepad* currentGamepad = gpm[i.first];
+				handleController(currentGamepad);
+				//handleController
+			}*/
 		
 		}
 		
@@ -508,3 +593,4 @@ int main( int argc, char* args[] )
 
 	return 0;
 }
+
