@@ -51,10 +51,34 @@ protected:
 	KeyboardManager* km;
 
 
-	std::vector<Button*> buttons;
-	int indexHighlighted;
+	//std::vector<Button*> buttons;
+
+
+	std::vector<std::vector<Button*>> buttons;
+
+	std::vector<Button*> modeSelection;
+	std::vector<int> indexHighlighted;
+	//int indexHighlighted;
+
+	int menuState;
+	int buttonSet;
+
+	bool changeMode;
 
 	bool quitToDesk;
 
+	float timeSwitchingMode;
+
+	int modePlay;
+
+
+	std::vector<bool> playerConfirm;
+	std::vector<Entity*> playersFaces;
+
+
+	std::vector<Entity*> abuttons;
+	Text* pressToPlay;
+
+	
 
 };
