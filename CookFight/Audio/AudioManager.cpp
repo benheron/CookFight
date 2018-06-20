@@ -7,7 +7,21 @@ AudioManager::AudioManager(std::string filePath)
 
 AudioManager::~AudioManager()
 {
+	for (int i = 0; i < soundEffectsList.size(); i++)
+	{
+		delete soundEffectsList[i];
+	}
+	soundEffectsList.clear();
+	soundEffectsID.clear();
+	soundEffectsString.clear();
 
+	for (int i = 0; i < bgMusicList.size(); i++)
+	{
+		delete bgMusicList[i];
+	}
+	bgMusicList.clear();
+	bgMusicID.clear();
+	bgMusicString.clear();
 }
 
 bool AudioManager::loadAudio(std::string filePath)
