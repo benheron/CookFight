@@ -17,6 +17,7 @@
 #include "../entities/HUD/TextTime.h"
 
 #include "../entities/HUD/ScoreCard.h"
+#include "../entities/HUD/WinCard.h"
 
 #include "../Utilities/Time/Timer.h"
 
@@ -30,7 +31,7 @@ class GameOverState;
 class GameState : public State
 {
 public:
-	GameState(StateManager* manager, Platform *platform, ResourceManager* rm);
+	GameState(StateManager* manager, Platform *platform, ResourceManager* rm, int mode);
 	virtual ~GameState();
 
 	/**
@@ -64,6 +65,9 @@ protected:
 	void resetGame();
 
 	bool collisionWithObjects(Actor *e1);
+
+
+	int mode;
 
 
 	bool cameraFollow = true;
@@ -153,6 +157,7 @@ protected:
 	std::string pauseAction;
 
 	Text* playAgainText;
+	Text* returnMenuText;
 
 	glm::vec3 origTimerValue;
 
@@ -169,4 +174,34 @@ protected:
 	bool playingBGSpedUp;
 
 	FoodTable* fodTab;
+
+	float restartTimer;
+
+	float beginGameTimer;
+
+	bool endChime;
+
+
+	Entity* getReady;
+	Entity* startCook;
+	Entity* finishGame;
+
+	bool startOfGame;
+	WinCard * winningCard;
+
+	bool addedWinCard;
+
+	int playerWinner;
+
+
+	float pointsWinnerTimer;
+
+	bool canRestartGameEnd;
+
+
+	std::vector<int> playerPoints;
+	std::vector<Text*> playerPointsText;
+
+	bool toMenu;
+
 };
