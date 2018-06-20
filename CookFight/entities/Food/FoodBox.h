@@ -30,6 +30,10 @@ public:
 
 	std::string getFoodState() { return foodState; }
 
+	void setSelected(bool s) { selected = s; }
+
+	bool getSelected() { return selected; }
+
 protected:
 	glm::vec3 itemPickUpScale;
 
@@ -38,4 +42,6 @@ protected:
 	FoodType* foodTypeGiven;
 
 	std::string foodState;
+
+	bool selected;
 };

@@ -65,6 +65,8 @@ Entity::~Entity()
 	{
 		delete children[i];
 	}
+
+	delete bb;
 }
 
 
@@ -101,6 +103,13 @@ void Entity::init()
 	speed = 150;
 
 	blendColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	brightnessModifier = 1.0f;
+
+	movingTo = false;
+	moveToPos = glm::vec3(0);
+
+	movingVec = glm::vec3(0);
+	moveToSpeed = 0;
 
 
 	setQuadVertices(vertices);
@@ -165,7 +174,10 @@ void Entity::update(float dt)
 		//return;
 	}
 
+	if (movingTo)
+	{
 
+	}
 	
 
 
@@ -500,7 +512,9 @@ glm::mat4 Entity::getModelMatrix(int index)
 
 void Entity::setScale(glm::vec3 s)
 {
+	dimens /= modScale;
 	modScale = s;
+	dimens *= s;
 	updateModelMatrix();
 	updateBoundingBoxMatrix();
 }
@@ -543,10 +557,72 @@ std::vector<glm::vec2> Entity::getEntityVertices()
 
 void Entity::setShouldRender(bool r)
 {
-	for (int i = 0; i < children.size(); i++)
+	/*for (int i = 0; i < children.size(); i++)
 	{
 		children[i]->setShouldRender(r);
-	}
+	}*/
 
 	shouldRender = r;
+}
+
+
+glm::vec4 Entity::getBlendBrightnessColour()
+{
+	glm::vec4 bbc;
+	
+	float valToAdd = brightnessModifier - 1.f;
+	bbc.x = blendColour.x + valToAdd;
+	bbc.y = blendColour.y + valToAdd;
+	bbc.z = blendColour.z + valToAdd;
+
+	bbc.w = blendColour.w;
+
+
+
+	if (bbc.x > 1.f)
+	{
+		bbc.x = 1.f;
+	} 
+	else if (bbc.x < 0.f)
+	{
+		bbc.x = 0.f;
+	}
+
+	if (bbc.y > 1.f)
+	{
+		bbc.y = 1.f;
+	}
+	else if (bbc.y < 0.f)
+	{
+		bbc.y = 0.f;
+	}
+
+	if (bbc.z > 1.f)
+	{
+		bbc.z = 1.f;
+	}
+	else if (bbc.z < 0.f)
+	{
+		bbc.z = 0.f;
+	}
+
+	return bbc;
+}
+
+void Entity::moveTo(glm::vec3 p, float speed)
+{
+	movingVec = -p - pos;
+
+	glm::vec3 bg = glm::vec3(abs(movingVec.x), abs(movingVec.y), abs(movingVec.z));
+
+	if (bg != glm::vec3(0) && movingVec != -glm::vec3(0))
+	{
+		moveToPos = -p;
+		movingTo = true;
+		moveToSpeed = speed;
+
+
+		movingVec = glm::normalize(movingVec);
+
+	}
 }

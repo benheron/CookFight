@@ -19,11 +19,14 @@ FoodBox::~FoodBox()
 void FoodBox::update(float dt)
 {
 	InteractiveObject::update(dt);
+	selected = false;
+
+	brightnessModifier = 1.f;
 }
 
 void FoodBox::foodBoxInit()
 {
-	
+	selected = false;
 }
 /*
 

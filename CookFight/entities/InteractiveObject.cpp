@@ -13,7 +13,7 @@ InteractiveObject::InteractiveObject(glm::vec3 pos, glm::vec3 dimens, glm::vec2 
 
 InteractiveObject::~InteractiveObject()
 {
-
+	delete interactHitbox;
 }
 
 void InteractiveObject::update(float dt)

@@ -29,7 +29,11 @@ void CookingDevice::cookDevInit(FoodTypeManager* ftm, Texture* iconTexture)
 
 	for (int i = 0; i < maxNumFood; i++)
 	{
-		Entity* ico = new Entity(iconTexture, pos + glm::vec3((20+2) * i, -30, 0));
+		//Entity* ico = new Entity(iconTexture, pos + glm::vec3((20+2) * i, -30, 0));
+
+		Entity* ico = new Entity(iconTexture, pos + glm::vec3(0, -30, 0));
+		ico->setCentre(glm::vec3(pos + glm::vec3(dimens.x / 2.f, -20, 0)));
+
 		ico->setShouldRender(false);
 		children.push_back(ico);
 
@@ -51,7 +55,7 @@ void CookingDevice::cookDevInit(FoodTypeManager* ftm, Texture* iconTexture)
 void CookingDevice::update(float dt)
 {
 	InteractiveObject::update(dt);
-
+	brightnessModifier = 1.f;
 	if (isCooking)
 	{
 		if (!cookingGrowl->isPlaying())

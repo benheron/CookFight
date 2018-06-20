@@ -83,7 +83,7 @@ void ScoreCard::scoreCardInit()
 			float xPos = foodTypesTextObj[j]->getPosition().x + 15.f;
 
 
-			std::string xNums = "x00";
+			std::string xNums = "00";
 			Text* t = new Text(timng, xNums);
 
 			t->setPosition(glm::vec3(xPos, yPos, 0));
@@ -119,33 +119,9 @@ void ScoreCard::scoreCardInit()
 
 	children.push_back(scoreTextObj);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
-void ScoreCard::addFoodCollected(FoodCollector* fc)
+void ScoreCard::addFoodCollected(FoodCollector* fc, int playerScore)
 {
 	std::vector<FoodStateType*> foodsCollected = fc->getFoodsCollected();
 
@@ -173,7 +149,7 @@ void ScoreCard::addFoodCollected(FoodCollector* fc)
 		std::string fs = foodsCollected[i]->getFoodState();
 
 
-		if (ft == "Meat")
+		/*if (ft == "Meat")
 		{
 			if (fs == "Raw")
 			{
@@ -208,8 +184,13 @@ void ScoreCard::addFoodCollected(FoodCollector* fc)
 			{
 				score += 4;
 			}
-		}
+		}*/
 
+	}
+
+	if (score < 0)
+	{
+		score = 0;
 	}
 
 	std::unordered_map<std::string, std::string> foodNumsText;
@@ -224,12 +205,17 @@ void ScoreCard::addFoodCollected(FoodCollector* fc)
 		{
 			//float xPos = ((j + 1)*(dimens.x / foodTypes.size())) + pos.x + (dimens.x / 25.f);
 			//float xPos = foodTypesTextObj[j]->getPosition().x +15.f;
+
 			Text* curText = foodsText[foodStates[i]][foodTypes[j]->getID()];
 			
-			std::string xNums = "x" + std::to_string(foodNums[foodStates[i]][foodTypes[j]->getID()]);
+			//std::string xNums = "x" + std::to_string(foodNums[foodStates[i]][foodTypes[j]->getID()]);
+
+			std::string xNums = std::to_string(foodNums[foodStates[i]][foodTypes[j]->getID()]);
 
 
-			std::string curTextString = curText->getText();
+			curText->changeTextEnd(xNums);
+
+			/*std::string curTextString = curText->getText();
 			for (int i = 0; i < xNums.length(); i++)
 			{
 				std::string cdt = curTextString.substr(i, 1);
@@ -239,34 +225,15 @@ void ScoreCard::addFoodCollected(FoodCollector* fc)
 				{
 					curText->changeCharacter(i, xNums.substr(i, 1));
 				}
-			}
+			}*/
 
-
-
-
-		
-
-			//Text* t = new Text(timng, xNums);
-
-			//t->setPosition(glm::vec3(xPos, yPos, 0));
-			//t->setBlendColour(glm::vec4(1.f, 0.f, 0.f, 1.f));
-			//t->setScale(glm::vec3(0.8f));
-
-			//children.push_back(t);
 		}
 	}
 
 
-	//float centX = (dimens.x / 8.f) + pos.x;
-	//float centY = (pos.y+dimens.y) - (dimens.y / 8.f);
-	//std::string scoreText = "Score: " + std::to_string(score);
 	
-	//Text* t = new Text(timng, scoreText);
-	//t->setPosition(glm::vec3(centX, centY,0));
 
-	//children.push_back(t);
-
-	std::string str = std::to_string(score);
+	std::string str = std::to_string(playerScore);
 
 	scoreTextObj->changeTextEnd(str);
 }

@@ -13,7 +13,7 @@ Actor::Actor(glm::vec3 pos, glm::vec3 dimens, glm::vec2 uvSize, glm::vec3 offPos
 
 Actor::~Actor()
 {
-
+	delete hurtBox;
 }
 
 void Actor::actorInit()

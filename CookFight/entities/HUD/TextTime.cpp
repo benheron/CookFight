@@ -7,7 +7,7 @@ TextTime::TextTime(TextImageManager *timng, TimeTracker* timeTracked, bool colon
 
 TextTime::~TextTime()
 {
-
+	delete timeText;
 }
 
 void TextTime::textTimeInit(TextImageManager *timng)

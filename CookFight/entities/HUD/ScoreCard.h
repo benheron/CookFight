@@ -12,7 +12,7 @@ public:
 
 	void scoreCardInit();
 
-	void addFoodCollected(FoodCollector* fc);
+	void addFoodCollected(FoodCollector* fc, int playerScore = 0);
 
 	void resetScore() { score = 0; }
 	

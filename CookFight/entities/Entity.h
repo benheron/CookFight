@@ -208,6 +208,20 @@ public:
 
 	std::vector<Entity*> getChildren() { return children; }
 
+	void setBrightnessModifier(float bm) { brightnessModifier = bm; }
+
+	float getBrightnessModifier() { return brightnessModifier; }
+
+	glm::vec4 getBlendBrightnessColour();
+
+	void moveTo(glm::vec3 pos, float speed);
+
+	glm::vec3 getScaledDimens() { return dimens*modScale; }
+
+
+	void setAlpha(float a) { blendColour.w = a; }
+	float getAlpha() { return blendColour.w; }
+
 
 protected:
 
@@ -293,6 +307,7 @@ protected:
 
 	glm::vec4 blendColour;
 
+	float brightnessModifier;
 
 	bool shouldRender;
 
@@ -303,4 +318,9 @@ protected:
 	float maxXVel;
 
 	glm::vec3 acceleration;
+
+	bool movingTo;
+	glm::vec3 moveToPos;
+	glm::vec3 movingVec;
+	float moveToSpeed;
 };
