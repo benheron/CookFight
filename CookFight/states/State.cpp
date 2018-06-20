@@ -7,6 +7,23 @@ State::State(StateManager* stateManager, Platform* platform)
 	loaded = false;
 }
 
+State::~State()
+{
+	for (int i = entities.size() - 1; i > -1; i--)
+	{
+		delete entities[i];
+	}
+	entities.clear();
+
+
+	for (int i = hudElements.size() - 1; i > -1; i--)
+	{
+		delete hudElements[i];
+	}
+	delete camera;
+	hudElements.clear();
+}
+
 void State::startLoading()
 {
 	active = true;

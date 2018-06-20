@@ -36,7 +36,7 @@ public:
 	 */
 	State(StateManager* manager, Platform* platform);
 
-	virtual ~State() {}
+	virtual ~State();
 
 	/**
 	@brief Handles any events such as keyboard/mouse input.
