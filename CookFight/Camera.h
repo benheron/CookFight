@@ -41,6 +41,7 @@ public:
 
 	glm::vec2 getCurrentDimensions();
 
+	void moveTo(glm::vec3 pos, float speed);
 
 private:
 	glm::vec3 pos;
@@ -66,6 +67,12 @@ private:
 
 	glm::vec3 origin;
 	
+
+
+	bool movingTo;
+	glm::vec3 moveToPos;
+	glm::vec3 movingVec;
+	float moveToSpeed;
 
 
 };

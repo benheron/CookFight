@@ -6,6 +6,11 @@ Camera::Camera() : pos(glm::vec3(0)), baseMat(glm::mat4(1)), camMatrix(glm::mat4
 	origin = pos;
 	newCamScale = camScale;
 	updateCameraMatrix();
+
+	movingTo = false;
+	moveToPos = glm::vec3(0);
+	movingVec = glm::vec3(0);
+	moveToSpeed = 0.f;
 }
 
 Camera::~Camera()
@@ -16,7 +21,21 @@ Camera::~Camera()
 void Camera::update(float dt)
 {
 	
-
+	if (movingTo)
+	{
+		glm::vec3 val = pos - moveToPos;
+		if (glm::length(val) < glm::length(movingVec * moveToSpeed *dt))
+		{
+			pos = moveToPos;
+			movingTo = false;
+		}
+		else {
+			pos += movingVec * moveToSpeed *dt;
+			
+		}
+		
+		updateCameraMatrix();
+	}
 
 }
 
@@ -172,4 +191,23 @@ glm::vec2 Camera::getCurrentDimensions()
 	glm::vec3 d = glm::vec3(dimens.x, dimens.y, 0) / (camScale*2.f);
 	glm::vec2 d2 = glm::vec2(d.x, d.y);
 	return d2;
+}
+
+void Camera::moveTo(glm::vec3 p, float speed)
+{
+	movingVec = -p - pos;
+
+	glm::vec3 bg = glm::vec3(abs(movingVec.x), abs(movingVec.y), abs(movingVec.z));
+
+	if (bg != glm::vec3(0) && movingVec != -glm::vec3(0))
+	{
+		moveToPos = -p;
+		movingTo = true;
+		moveToSpeed = speed;
+
+
+		movingVec = glm::normalize(movingVec);
+
+	}
+	
 }
