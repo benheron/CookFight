@@ -19,11 +19,11 @@ Audio::Audio(std::string filePath, int type)
 
 Audio::~Audio()
 {
-	if (music != NULL)
+	if (type == 0)
 	{
 		Mix_FreeMusic(music);
 	}
-	if (sfx != NULL)
+	if (type == 1)
 	{
 		Mix_FreeChunk(sfx);
 	}
