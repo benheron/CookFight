@@ -1,6 +1,6 @@
 #include "Gamepad.h"
 
-Gamepad::Gamepad()
+Gamepad::Gamepad(SDL_GameController* gameControllerReference) : gameControllerReference(gameControllerReference)
 {
 	buttons["a"] = false;
 	buttons["b"] = false;

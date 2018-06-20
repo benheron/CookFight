@@ -1,12 +1,15 @@
 #pragma once
 #include <unordered_map>
+#include <SDL.h>
+
+
 struct StickVal {
 	float x;
 	float y;
 };
 class Gamepad {
 public:
-	Gamepad();
+	Gamepad(SDL_GameController* gameControllerReference);
 	~Gamepad();
 
 	void setButtonDown(std::string k, bool d);
@@ -29,6 +32,8 @@ public:
 
 	StickVal getRightStick();
 
+	SDL_GameController* getGameControllerReference() { return gameControllerReference; }
+
 	
 private:
 	std::unordered_map<std::string, bool> buttons;
@@ -43,4 +48,6 @@ private:
 	int deadZone;
 	const int STICK_MAX_POSITIVE = 32767;
 	const int STICK_MAX_NEGATIVE = -32768;
+
+	SDL_GameController* gameControllerReference;
 };
