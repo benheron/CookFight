@@ -15,6 +15,8 @@ ResourceManager::~ResourceManager()
 	delete mmng;
 	delete ssmng;
 	delete bgmng;
+	delete amng;
+	delete tmng;
 
 	for (int i = gamePads.size() - 1; i > -1; i--)
 	{
@@ -38,6 +40,8 @@ void ResourceManager::initResources()
 	amng = new AudioManager("res/txt/audio.txt");
 
 	ftmng = new FoodTypeManager("res/txt/food.txt");
+
+	tmng = new TextureManager("res/txt/textures.txt");
 
 }
 
@@ -75,4 +79,14 @@ BackgroundManager* ResourceManager::getBackgroundManager()
 Gamepad* ResourceManager::getGamepad(int index)
 {
 	return gamePads[index];
+}
+
+void ResourceManager::addGamepad(Gamepad* gp)
+{
+	gamePads.push_back(gp);
+}
+
+void ResourceManager::removeGamepad(int index)
+{
+	gamePads.erase(gamePads.begin() + index);
 }

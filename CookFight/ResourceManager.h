@@ -7,6 +7,7 @@
 
 #include "entities/Food/FoodTypeManager.h"
 
+#include "TextureManager.h"
 #include "Audio/AudioManager.h"
 
 
@@ -41,6 +42,8 @@ public:
 
 	AudioManager* getAudioManager() { return amng; }
 
+	TextureManager* getTextureManager() { return tmng; }
+
 	Gamepad* getGamepad(int index);
 
 	int getNumGamePads() { return gamePads.size(); }
@@ -52,6 +55,17 @@ public:
 
 	void setPauseState(PauseState* ps) { paState = ps; }
 	PauseState* getPauseState() { return paState; }
+
+
+	void addGamepad(Gamepad* gp);
+	void removeGamepad(int index);
+
+	void addGamepadToMap(Gamepad* gp, int key) { gamepadsMap[key] = gp; }
+	void removeGamepadFromMap(int key) { gamepadsMap.erase(key); }
+
+	Gamepad* getGamepadFromMap(int key) { return gamepadsMap[key]; }
+
+	std::unordered_map<int, Gamepad*> getGamePadMap() { return gamepadsMap; }
 
 protected:
 
@@ -65,10 +79,13 @@ protected:
 
 	AudioManager* amng;
 
+	TextureManager* tmng;
+
 
 	std::vector<Gamepad*> gamePads;
 
 
+	std::unordered_map<int, Gamepad*> gamepadsMap;
 
 
 	PauseState* paState;
