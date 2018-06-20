@@ -66,8 +66,12 @@ void Actor::actorInit()
 	
 
 	//hardcoded value
-	hitboxDimensScale = glm::vec3(14, 8, 0);
-	hitboxPosRel = glm::vec3(0, 12, 0);
+	//hitboxDimensScale = glm::vec3(14, 8, 0);
+	//hitboxPosRel = glm::vec3(0, 12, 0);
+
+	hitboxDimensScale = glm::vec3(dimens.x/2.f, dimens.y/5.f, 0);
+	hitboxPosRel = glm::vec3(0, hitboxDimensScale.y + hitboxDimensScale.y/2.f, 0);
+	
 
 
 	hurtBox = new BoundingBox(glm::vec3(-1.f, -1.f, 0), glm::vec3(1.f, 1.f, 0));

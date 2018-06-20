@@ -1019,7 +1019,7 @@ void GameState::load()
 
 	for (int i = 0; i < rm->getNumGamePads(); i++)
 	{
-		Chef *ch = new Chef(rm->getSpriteSheetManager()->getSpriteSheetByID("Chefcop"), playerStartingPositions[i], glm::vec3(28, 40, 0));
+		Chef *ch = new Chef(rm->getSpriteSheetManager()->getSpriteSheetByID("Chefcop"), playerStartingPositions[i], glm::vec3(28, 40, 0), glm::vec3(28, 40, 0));
 		ch->setBlendColour(blendColours[i]);
 		players.push_back(ch);
 	}
